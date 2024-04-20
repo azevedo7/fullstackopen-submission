@@ -1,0 +1,14 @@
+npm create vite@latest PROJECTNAME -- --template react
+npm install json-server --save-dev
+npm install vite
+
+
+// Use environment variables
+
+export VITE_SOME_KEY=54l41n3n4v41m34rv0 && npm run dev // For Linux/macOS Bash
+($env:VITE_SOME_KEY="54l41n3n4v41m34rv0") -and (npm run dev) // For Windows PowerShell
+set "VITE_SOME_KEY=54l41n3n4v41m34rv0" && npm run dev // For Windows cmd.exe
+
+($env:VITE_OpenWeather_API="KEY") -and (npm run dev)
+
+THEY MUST START WITH VITE_
