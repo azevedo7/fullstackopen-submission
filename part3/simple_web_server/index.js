@@ -10,6 +10,9 @@ const requestLogger = (req, res, next) => {
   next()
 }
 
+// show static pages
+app.use(express.static('build'))
+
 // transform request body into an object
 // express.json() is also a middleware that has to be bofere
 // our request logger because express.json() takes the body
@@ -18,6 +21,7 @@ app.use(express.json())
 
 // use requestLogger middleware
 app.use(requestLogger)
+
 
 // catch request to non-existing route
 const unknownEndpoint = (req, res) => {
@@ -42,9 +46,6 @@ let notes = [
   }
 ]
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>')
-})
 
 app.get('/api/notes', (req, res) => {
   res.json(notes)
