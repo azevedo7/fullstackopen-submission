@@ -1,8 +1,28 @@
 const express = require('express')
 const app = express()
 
+// Middleware
+const requestLogger = (req, res, next) => {
+  console.log('Method: ', req.method)
+  console.log('Paht: ', req.path)
+  console.log('Body: ', req.body)
+  console.log('---')
+  next()
+}
+
 // transform request body into an object
+// express.json() is also a middleware that has to be bofere
+// our request logger because express.json() takes the body
+// of the request and turns it into an object
 app.use(express.json())
+
+// use requestLogger middleware
+app.use(requestLogger)
+
+// catch request to non-existing route
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({error: 'unknown endpoint'})
+}
 
 let notes = [
   {
@@ -27,17 +47,17 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/notes', (req, res) => {
-    res.json(notes)
+  res.json(notes)
 })
 
 app.get('/api/notes/:id', (req, res) => {
   // id is a string, so use Number()
-    const id = Number(req.params.id);
-    // console.log(note.id, typeof note.id, typeof id, note.id == id)
-    // use typeof to debug 
-    const note = notes.find(note => note.id === id)
-
-    if(note){
+  const id = Number(req.params.id);
+  // console.log(note.id, typeof note.id, typeof id, note.id == id)
+  // use typeof to debug 
+  const note = notes.find(note => note.id === id)
+  
+  if(note){
       res.json(note)
     } else{
       res.statusMessage = `Note with id ${id} not found`;
@@ -84,6 +104,9 @@ app.post('/api/notes', (req, res) => {
   res.json(note)
   
 })
+
+
+app.use(unknownEndpoint);
 
 // const app = http.createServer((requeste, response) => {
 //     response.writeHead(200, {'Content-Type': 'text/plain'})

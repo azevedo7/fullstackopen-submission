@@ -1,8 +1,15 @@
 // Setup express
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
+morgan.token('content', (req, res) =>
+    req.method === 'POST' 
+        ? JSON.stringify(req.body)
+        : null)
 
 app.use(express.json())
+//app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 
 let persons = [
     {
@@ -68,7 +75,7 @@ app.post('/api/persons/', (req, res) => {
             error: 'content missing'     
         })
     }
-    if(!persons.find(p => p.name.toLowerCase() === body.name.toLowerCase())){
+    if(persons.find(p => p.name.toLowerCase() === body.name.toLowerCase()) != null){
         return res.status(409).json({
             error:'name already exists'
         })
