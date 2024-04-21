@@ -4,13 +4,7 @@ import phonesServices from './services/phones'
 import Notification from './assets/Notification.jsx'
 
 function App() {
-  const [persons, setPersons] = useState([
-    {
-      name: 'Arto Hellas',
-      number: '040-123456',
-      id: 1
-    }
-  ])
+  const [persons, setPersons] = useState(null)
   const [update, setUpdate] = useState(0);
   const [message, setMessage] = useState();
   const [type, setType] = useState('');
@@ -50,7 +44,6 @@ function App() {
       } else{
         phonesServices
         .create(person)
-        setPersons(persons.concat(person))
         setUpdate(update+1);
         addNotification(`${person.name} was added to the phonebook`)
       }
@@ -75,7 +68,7 @@ function App() {
     phonesServices
     .del(id)
     .then(response => console.log(response));
-    setPersons(persons.filter(person => person.id !== id))
+    setUpdate(update+1);
   }
   
   
