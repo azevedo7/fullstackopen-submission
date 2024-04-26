@@ -1,3 +1,34 @@
+// Mongoose
+const mongoose = require('mongoose')
+
+const password = process.argv[2]
+
+// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
+const url =
+  `mongodb+srv://fullstack:${password}@cluster0.bkmlhag.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
+
+
+mongoose.set('strictQuery',false)
+mongoose.connect(url)
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+})
+
+noteSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
+const Note = require('./models/note')
+
+// ----
+
+
 const express = require('express')
 const app = express()
 
@@ -46,9 +77,20 @@ let notes = [
   }
 ]
 
+// get notes
 
+// using our json server
+//app.get('/api/notes', (req, res) => {
+//  res.json(notes)
+//})
+
+// using MongoDB
 app.get('/api/notes', (req, res) => {
-  res.json(notes)
+  Note
+    .find({})
+    .then(notes =>{
+      res.json(notes)
+    })
 })
 
 app.get('/api/notes/:id', (req, res) => {
