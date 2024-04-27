@@ -39,13 +39,20 @@ function App() {
           addNotification(`${person.name} was updated`)
         }
         else{
-          addNotification(`${person.name} was not added to the phonebook`)
+          addError(`${person.name} was not added to the phonebook`)
         }
-      } else{
+    } else{
         phonesServices
-        .create(person)
+          .create(person)
+          .then(createdPerson => {
+            setPersons(persons.concat(createdPerson))
+            addNotification(`${person.name} was added to the phonebook`)
+          })
+          .catch((err) => {
+            addError(err.response.data.error)
+            return
+          })
         setUpdate(update+1);
-        addNotification(`${person.name} was added to the phonebook`)
       }
     }
     

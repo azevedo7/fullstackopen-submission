@@ -63,39 +63,31 @@ app.delete('/api/persons/:id', (req, res) => {
         .catch(err => next(err))
 })
 
-app.post('/api/persons/', (req, res) => {
+app.post('/api/persons/', (req, res, next) => {
     const body = req.body
-
-    if(body.name === undefined || body.number === undefined) {
-        return res.status(400).json({
-            error: 'content missing'     
-        })
-    }
-    // if(persons.find(p => p.name.toLowerCase() === body.name.toLowerCase()) != null){
-    //     return res.status(409).json({
-    //         error:'name already exists'
-    //     })
-    // }
 
     const phone = new Phone({
         name: body.name,
         number: body.number,
     })
 
-    phone.save().then(savedPerson => {
-        res.json(savedPerson)
-    })    
+    phone.save()
+        .then(savedPerson => {
+            res.json(savedPerson)
+        })    
+        .catch(error => next(error))
+
+
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
-    const body = req.body
-
-    const person = {
-        name: body.name,
-        number: body.number
-    }
-
-    Phone.findByIdAndUpdate(req.params.id, person, { new: true})
+    const { name, number }= req.body
+    
+    Phone.findByIdAndUpdate(
+        req.params.id,
+        { name, number},
+        { new: true, runValidators: true, context: 'query' }
+    )
         .then(updatedPerson => {
             res.json(updatedPerson)
         })
@@ -113,6 +105,10 @@ app.get('/info', (req, res) => {
 
 const errorHandler = (error, req, res, next) => {
     console.log(error.message)
+
+    if(error.name === "ValidationError") {
+        return res.status(400).json({ error: error.message})
+    }
 
     return res.status(400).send({ error: error.name })
     next(error)

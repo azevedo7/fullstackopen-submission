@@ -8,8 +8,29 @@ console.log('connecting to', url)
 mongoose.connect(url)
 
 const phoneSchema = new mongoose.Schema({
-    name: String,
-    number: Number
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        minLength: 8,
+        validate: [
+            {
+                validator: function(v) {
+                    return /\d{2}-\d{7}/.test(v);
+                },
+                message: 'Phone number must folow the format: 09-1234556 or 040-22334455'
+            },
+            {
+                validator: function(v) {
+                    return /\d{3}-\d{8}/.test(v)
+                },
+                message: 'Phone number must folow the format: 09-1234556 or 040-22334455' 
+            }
+        ]
+    }
 })
 
 // Clear up data
