@@ -1,8 +1,12 @@
-DELETE http://localhost:3001/api/persons/1
+DELETE http://localhost:3001/api/persons/66299356b957046b76ac430d
 
 ###
 
-GET http://localhost:3001/api/persons
+GET  http://localhost:3001/api/persons
+
+###
+
+GET http://localhost:3001/api/persons/662bf68bf36edcdf354f72f5
 
 ###
 
@@ -13,3 +17,6 @@ Content-Type: application/json
     "name": "teste",
     "number": 9122233 
 }
+
+###
+DELETE http://localhost:3001/api/persons/662cc3184a71a4ed812495a7

@@ -1,6 +1,8 @@
 // Setup express
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const Phone = require('./models/phone')
 
 const morgan = require('morgan')
 const cors = require('cors')
@@ -40,61 +42,64 @@ let persons = [
 ]
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Phone.find({}).then(person => {
+        res.json(person)
+    })
 })
 
-app.get('/api/persons/:id', (req,res) => {
-    const id = Number(req.params.id);
-    const person = persons.find(person => person.id == id)
-
-    if(person){
-        res.json(person)
-    } else {
-        res.statusMessage = `Person with id ${id} not found`
-        res.status(404).end()
-    }
+app.get('/api/persons/:id', (req,res, next) => {
+    Phone.findById(req.params.id)
+        .then(person => {
+            res.json(person)
+        })
+        .catch(err => next(err))
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    res.statusMessage = (`Person with id ${id} deleted`);
-    res.status(204).end();  
+    Phone.findByIdAndDelete(req.params.id)
+        .then(result => {
+            res.status(204).end()
+        })
+        .catch(err => next(err))
 })
-
-const generateId = () => {
-    // const maxId = persons.length > 0
-    // ? Math.max(...persons.map(p => p.id))
-    // : 0
-    // return maxId + 1
-
-    return Math.floor(Math.random() * 10000)
-}
 
 app.post('/api/persons/', (req, res) => {
     const body = req.body
 
-    if(!body || !body.name || !body.number) {
+    if(body.name === undefined || body.number === undefined) {
         return res.status(400).json({
             error: 'content missing'     
         })
     }
-    if(persons.find(p => p.name.toLowerCase() === body.name.toLowerCase()) != null){
-        return res.status(409).json({
-            error:'name already exists'
-        })
-    }
+    // if(persons.find(p => p.name.toLowerCase() === body.name.toLowerCase()) != null){
+    //     return res.status(409).json({
+    //         error:'name already exists'
+    //     })
+    // }
+
+    const phone = new Phone({
+        name: body.name,
+        number: body.number,
+    })
+
+    phone.save().then(savedPerson => {
+        res.json(savedPerson)
+    })    
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body
 
     const person = {
         name: body.name,
-        number: body.number,
-        id: generateId()
+        number: body.number
     }
 
-    persons = persons.concat(person)
-    
-    res.json(person);
+    Phone.findByIdAndUpdate(req.params.id, person, { new: true})
+        .then(updatedPerson => {
+            res.json(updatedPerson)
+        })
+        .catch(err => next(err))
 })
 
 
@@ -105,6 +110,15 @@ app.get('/info', (req, res) => {
     res.write(`<p>${date.toString()}</p>`)
     res.end()
 })
+
+const errorHandler = (error, req, res, next) => {
+    console.log(error.message)
+
+    return res.status(400).send({ error: error.name })
+    next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT)

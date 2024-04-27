@@ -1,36 +1,7 @@
-// Mongoose
-const mongoose = require('mongoose')
-
-const password = process.argv[2]
-
-// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
-const url =
-  `mongodb+srv://fullstack:${password}@cluster0.bkmlhag.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
-
-
-mongoose.set('strictQuery',false)
-mongoose.connect(url)
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-})
-
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Note = require('./models/note')
-
-// ----
-
-
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const Note = require('./models/note')
 
 // Middleware
 const requestLogger = (req, res, next) => {
@@ -93,28 +64,43 @@ app.get('/api/notes', (req, res) => {
     })
 })
 
-app.get('/api/notes/:id', (req, res) => {
-  // id is a string, so use Number()
-  const id = Number(req.params.id);
-  // console.log(note.id, typeof note.id, typeof id, note.id == id)
-  // use typeof to debug 
-  const note = notes.find(note => note.id === id)
+// app.get('/api/notes/:id', (req, res) => {
+//   // id is a string, so use Number()
+//   // const id = Number(req.params.id);
+//   // // console.log(note.id, typeof note.id, typeof id, note.id == id)
+//   // // use typeof to debug 
+//   // const note = notes.find(note => note.id === id)
   
-  if(note){
-      res.json(note)
-    } else{
-      res.statusMessage = `Note with id ${id} not found`;
-      res.status(404).end()
-    }
+  
+//   // if(note){
+//   //     res.json(note)
+//   //   } else{
+//   //     res.statusMessage = `Note with id ${id} not found`;
+//   //     res.status(404).end()
+//   //   }
+//   Note.findById(req.params.id).then(note => {
+//   })
+// })
+
+app.get('/api/notes/:id', (request, response, next) => {
+  Note.findById(request.params.id)
+    .then(note => {
+      if(note){
+        response.json(note)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 // Deleting a note
-app.delete('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id);
-  notes = notes.filter(note => note.id !== id)
-
-  res.statusMessage = `Note with id ${id} deleted`;
-  res.status(204).end()
+app.delete('/api/notes/:id', (req, res, next) => {
+  Note.findByIdAndDelete(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // generate id
@@ -127,35 +113,65 @@ const generateId = () => {
 }
 
 // POST
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', (req, res, next) => {
   const body = req.body
 
-  if(!body.content) {
-    return res.status(400).json({
-      error: 'content missing'
+  const note = new Note({
+    content: body.content,
+    important: Boolean(body.important) || false,
+  })
+
+  note.save()
+    .then(savedNote => {
+      res.json(savedNote)
     })
-  }
+    .catch(error => next(error))
+})
+
+app.put('/api/notes/:id', (req, res, next) => {
+  const { content, important } = req.body
 
   const note = {
     content: body.content,
-    important: Boolean(body.important) || false,
-    id: generateId()
-  } 
+    important: body.important,
+  }
 
-  notes = notes.concat(note)
-
-  res.json(note)
-  
+  Note.findByIdAndUpdate(
+    req.params.id,
+    { content, important } , 
+    {new: true, runValidators: true, context: 'query'}
+  )
+    .then(updatedNote => {
+      res.json(updatedNote)
+    })
+    .catch(error => next(error))
 })
 
 
 app.use(unknownEndpoint);
+
+// error handler
+const errorHandler = (error, req, res, next) => {
+  console.log(error.message)
+
+  if(error.name === 'CastError'){
+    return res.status(400).send({ error: 'malformatted id'})
+  } else if(error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message })
+  }
+  
+  next(error);
+
+}
+
+app.use(errorHandler)
+
 
 // const app = http.createServer((requeste, response) => {
 //     response.writeHead(200, {'Content-Type': 'text/plain'})
 //     response.end(JSON.stringify(notes))
 // })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
