@@ -2,6 +2,29 @@ import { useState } from 'react'
 
 const Button = ({ text, onClick }) => <button onClick={onClick}>{text}</button>
 
+const MostVotes = ({anecdotes, votes}) => {
+  const max = Math.max(...votes)
+  if(max === 0){
+    return(
+      <>
+        <h1>No anecdote has votes</h1>
+      </>
+    )
+  }
+
+  let maxIndex = 0;
+  votes.forEach((value,index) => {if(value === max) {maxIndex = index}})
+
+  return(
+    <>
+      <h1>Most voted anecdote</h1>
+      <p>{anecdotes[maxIndex]}</p>
+    </>
+  )
+
+  
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -31,6 +54,7 @@ const App = () => {
       <p>has {votes[selected]} votes</p>
       <Button onClick={() => vote(selected)} text={'vote'} />
       <Button onClick={getRandom} text={'random'} />
+      <MostVotes anecdotes={anecdotes} votes={votes} />
     </div>
   )
 }
