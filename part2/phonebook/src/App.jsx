@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
@@ -12,6 +13,16 @@ const App = () => {
     const [filter, setFilter] = useState('')
     const [filteredPersons, setFilteredPersons] = useState(persons)
 
+    useEffect(() => {
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                setPersons(response.data)
+                setFilteredPersons(response.data)
+            })
+    }, [])    
+
+
     const handleNameChange = (e) => {
         setNewName(e.target.value)
     }
@@ -23,12 +34,12 @@ const App = () => {
     const handleFilterChange = (e) => {
         const tempFilter = e.target.value
         setFilter(tempFilter)
-        setFilteredPersons(persons.filter((person) => person.name.toLowerCase().includes(tempFilter.toLowerCase()) || person.phone.includes(tempFilter)))
+        setFilteredPersons(persons.filter((person) => person.name.toLowerCase().includes(tempFilter.toLowerCase()) || person.number.includes(tempFilter)))
 
     }
 
     const filterChange = (newPersons) => {
-        setFilteredPersons(newPersons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()) || person.phone.includes(filter)))
+        setFilteredPersons(newPersons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()) || person.number.includes(filter)))
     }
 
 
@@ -36,10 +47,10 @@ const App = () => {
         e.preventDefault()
         if (persons.some((person) => person.name.toLowerCase() === newName.toLowerCase())) {
             alert(`${newName} is already added to phonebook`)
-        } else if (persons.some((person) => person.phone === newNumber)) {
+        } else if (persons.some((person) => person.number=== newNumber)) {
             alert(`${newNumber} is already added to phonebook`)
         } else {
-            const newPersons = [...persons, { name: newName, phone: newNumber }]
+            const newPersons = [...persons, { name: newName, number: newNumber }]
             setPersons(newPersons)
             filterChange(newPersons)
             setNewName('')
