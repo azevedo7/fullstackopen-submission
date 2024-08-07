@@ -6,6 +6,8 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [filteredPersons, setFilteredPersons] = useState(persons)
 
   const handleNameChange = (e) => {
     setNewName(e.target.value)
@@ -15,6 +17,18 @@ const App = () => {
     setNewNumber(e.target.value)
   }
 
+  const handleFilterChange = (e) => {
+    const tempFilter = e.target.value
+    setFilter(tempFilter)
+    setFilteredPersons(persons.filter((person) => person.name.toLowerCase().includes(tempFilter.toLowerCase()) || person.phone.includes(tempFilter)))
+
+  }
+  
+  const filterChange = (newPersons) => {
+    setFilteredPersons(newPersons.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()) || person.phone.includes(filter)))
+  }
+
+
   const addName = (e) => {
     e.preventDefault()
     if(persons.some((person) => person.name.toLowerCase() === newName.toLowerCase())) {
@@ -22,7 +36,9 @@ const App = () => {
     } else if (persons.some((person) => person.phone === newNumber)) {
       alert(`${newNumber} is already added to phonebook`)
     } else {
-      setPersons(persons.concat({ name: newName, phone: newNumber }))
+      const newPersons = [...persons, { name: newName, phone: newNumber }]
+      setPersons(newPersons)
+      filterChange(newPersons)
       setNewName('')
       setNewNumber('')
     }
@@ -31,6 +47,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <form>
+        <div>filter shown with <input value={filter} onChange={handleFilterChange} /></div>
+      </form>
+      <h2>Add a new</h2>
       <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange}/>
@@ -44,7 +64,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {persons.map((person) => <p key={person.name}>{person.name} {person.phone}</p>)}
+        {filteredPersons.map((person) => <p key={person.name}>{person.name} {person.phone}</p>)}
       </ul>
     </div>
   )
