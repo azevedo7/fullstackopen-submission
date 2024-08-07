@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Filter from './components/Filter'
-import AddPersonForm from './components/AddPersonForm'
+import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
 
 const App = () => {
@@ -50,9 +50,16 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+
             <Filter filter={filter} handleFilterChange={handleFilterChange} />
-            <AddPersonForm addName={addName} newName={newName} handleNameChange={handleNameChange}
+
+            <h3>Add a new</h3>
+
+            <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange}
                 newNumber={newNumber} handleNumberChange={handleNumberChange} />
+
+            <h3>Numbers</h3>
+
             <Numbers persons={filteredPersons}/>
         </div>
     )
