@@ -1,3 +1,5 @@
+import Weather from "./Weather"
+
 const Country = ({ country }) => {
     let languages = []
     Object.keys(country.languages).forEach(key => {
@@ -16,6 +18,9 @@ const Country = ({ country }) => {
                 {languages.map((language) => <li key={language}>{language}</li>)}
             </ul>
             <img src={country.flags.png} width={200}/>
+
+            <h2>Weather</h2>
+            <Weather country={country} />
         </div>
     )
 }
