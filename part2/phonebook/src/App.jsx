@@ -3,6 +3,7 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
+import Notification from './components/Notification'
 
 const App = () => {
     const [persons, setPersons] = useState([
@@ -11,6 +12,8 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [notification, setNotification] = useState(null)
+    const [notificationType, setNotificationType] = useState('confirm') // confirm or error
 
     useEffect(() => {
         personService 
@@ -48,6 +51,11 @@ const App = () => {
                     .update(id, newPerson)
                     .then(updatedPerson => {
                         setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
+                        setNotification(`Added ${newPerson.name}`)
+                        setNotificationType('confirm')
+                        setTimeout(() => {
+                            setNotification(null)
+                        }, 5000)
                     })
             }
         } else {
@@ -65,7 +73,8 @@ const App = () => {
     }
 
     const deletePerson = (id) => {
-        if(!window.confirm(`Delete ${persons.find((person) => person.id === id).name} ?`)) return
+        const person = persons.find((p) => p.id === id) 
+        if(!window.confirm(`Delete ${person.name} ?`)) return
 
         personService
             .deleteRequest(id)
@@ -74,14 +83,22 @@ const App = () => {
 
             })
             .catch((error) => {
-                console.log(error)
+                errorNotification(`Information of ${person.name} has already been removed from server`)
             })
+    }
+
+    const errorNotification = (message) => {
+        setNotification(message)
+        setNotificationType('error')
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000)
     }
 
     return (
         <div>
             <h2>Phonebook</h2>
-
+            <Notification message={notification} className={`.${notificationType}`}/>
             <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
             <h3>Add a new</h3>
