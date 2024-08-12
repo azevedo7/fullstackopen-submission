@@ -1,0 +1,26 @@
+# flyctl launch added from notes-frontend\.gitignore
+# Logs
+notes-frontend\**\logs
+notes-frontend\**\*.log
+notes-frontend\**\npm-debug.log*
+notes-frontend\**\yarn-debug.log*
+notes-frontend\**\yarn-error.log*
+notes-frontend\**\pnpm-debug.log*
+notes-frontend\**\lerna-debug.log*
+
+notes-frontend\**\node_modules
+notes-frontend\**\dist
+notes-frontend\**\dist-ssr
+notes-frontend\**\*.local
+
+# Editor directories and files
+notes-frontend\**\.vscode\*
+!notes-frontend\**\.vscode\extensions.json
+notes-frontend\**\.idea
+notes-frontend\**\.DS_Store
+notes-frontend\**\*.suo
+notes-frontend\**\*.ntvs*
+notes-frontend\**\*.njsproj
+notes-frontend\**\*.sln
+notes-frontend\**\*.sw?
+fly.toml
