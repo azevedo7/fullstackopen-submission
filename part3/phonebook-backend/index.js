@@ -37,12 +37,13 @@ app.get('/api/persons/:id', (req, res) => {
     }
 })
 
-//3.4
+//3.4 and 3.15
 app.delete('/api/persons/:id', (req, res) => {
-    const id = req.params.id
-    persons = persons.filter(p => p.id !== id)
-    
-    res.status(204).end()
+    Person.findByIdAndDelete(req.params.id)
+        .then(result => {
+            res.status(204).end()
+        })
+        .catch(error => {console.log(error)})
 })
 
 //3.5
