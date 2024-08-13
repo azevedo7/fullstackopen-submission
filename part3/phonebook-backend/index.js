@@ -11,6 +11,8 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 const errorMiddleware = (error, req, res, next) => {
     console.log(error.message)
+
+    res.status(404).end()
 }
 
 app.get('/api/persons', (req, res) => {
@@ -29,16 +31,13 @@ app.get('/info', (req,res) => {
 })
 
 
-//3.3
-app.get('/api/persons/:id', (req, res) => {
-    const id = req.params.id
-    const person = persons.find(p => p.id = id)
-    
-    if(person){
-        res.json(person)
-    } else{
-        res.status(404).end()
-    }
+//3.3 and 3.18
+app.get('/api/persons/:id', (req, res, next) => {
+    Person.findById(req.params.id)
+        .then(result => {
+            res.json(result)
+        })
+        .catch(error => next(error))
 })
 
 //3.4 and 3.15
