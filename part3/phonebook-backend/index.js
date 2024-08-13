@@ -9,6 +9,10 @@ app.use(express.json())
 app.use(express.static('dist'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+const errorMiddleware = (error, req, res, next) => {
+    console.log(error.message)
+}
+
 app.get('/api/persons', (req, res) => {
     Person.find({})
         .then(phones => {
@@ -38,12 +42,12 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 //3.4 and 3.15
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndDelete(req.params.id)
         .then(result => {
             res.status(204).end()
         })
-        .catch(error => {console.log(error)})
+        .catch(error => next(error))
 })
 
 //3.5
@@ -53,28 +57,18 @@ const generateId = () => {
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
-
     // name is missing
     if(!body.name){
         return res.status(400).json({
             error: 'name missing'
         })
     }
-
     // phone is missing
     if(!body.number){
         return res.status(400).json({
             error: 'phone missing'
         })
     }
-
-    // name exists
-    // if(persons.find(p => p.name === body.name))
-    // {
-    //     return res.status(404).json({
-    //         error: 'name exists'
-    //     })
-    // }
 
     const person = new Person({
         name: body.name,
@@ -87,6 +81,8 @@ app.post('/api/persons', (req, res) => {
             res.json(data)
         })
 })
+
+app.use(errorMiddleware)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
