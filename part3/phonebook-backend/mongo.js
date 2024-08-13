@@ -8,7 +8,7 @@ if (process.env.lenght < 5) {
 //get password
 const password = process.argv[2]
 
-const url = `mongodb+srv://fullstack:${password}@cluster0.bkmlhag.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
+const url = `mongodb+srv://fullstack:${password}@cluster0.bkmlhag.mongodb.net/PhoneBookApp?retryWrites=true&w=majority&appName=Cluster0`
 
 // connect to mongodb
 mongoose.connect(url)
