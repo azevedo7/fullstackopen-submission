@@ -50,11 +50,6 @@ app.delete('/api/persons/:id', (req, res, next) => {
         .catch(error => next(error))
 })
 
-//3.5
-const generateId = () => {
-    return String(Math.floor(Math.random() * 10000))
-}
-
 app.post('/api/persons', (req, res) => {
     const body = req.body
     // name is missing
@@ -80,6 +75,21 @@ app.post('/api/persons', (req, res) => {
         .then(data => {
             res.json(data)
         })
+})
+
+// 3.17
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body
+    const newPerson = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(req.params.id, newPerson, { new: true } )
+        .then(response => {
+            res.status(200).end()
+        })
+        .catch(error => next(error))
 })
 
 app.use(errorMiddleware)
