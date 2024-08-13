@@ -1,5 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const Note = require('./models/note')
+
 app.use(express.static('dist'))
 
 const cors = require('cors')
@@ -43,28 +46,20 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/notes', (req, res) => {
-    res.json(notes)
+    Note.find({}).then(notes => {
+        res.json(notes)
+    })
 })
 
 // single resource
 app.get('/api/notes/:id', (req, res) => {
     const id = req.params.id
-    const note = notes.find(note => note.id === id)
 
-    if(note){
-        res.json(note)
-    } else{
-        res.status(404).end()
-    }
+    Note.findById(id)
+        .then(note => res.json(note))
+        .catch(error => res.status(404).end())
 })
 
-// receiving data
-const generateId = () => {
-    const maxId = notes.length > 0
-        ? Math.max(...notes.map(n => Number(n.id)))
-        : 0
-    return String(maxId + 1)
-}
 
 app.post('/api/notes', (req, res) => {
     const body = req.body
@@ -75,14 +70,15 @@ app.post('/api/notes', (req, res) => {
         })
     }
 
-    const note = {
+    const note = new Note({
         content: body.content,
         important: Boolean(body.important) || false,
-        id: generateId(),
-    }
+    })
 
-    notes = notes.concat(note)
-    res.json(note)
+    note.save()
+        .then(savedNote => {
+            res.json(savedNote)
+        })
 })
 
 // deleting resources
