@@ -68,22 +68,23 @@ app.post('/api/persons', (req, res) => {
     }
 
     // name exists
-    if(persons.find(p => p.name === body.name))
-    {
-        return res.status(404).json({
-            error: 'name exists'
-        })
-    }
+    // if(persons.find(p => p.name === body.name))
+    // {
+    //     return res.status(404).json({
+    //         error: 'name exists'
+    //     })
+    // }
 
-    const person = {
-        id: generateId(),
+    const person = new Person({
         name: body.name,
-        number: Number(body.number)
-    } 
-    persons = persons.concat(person)
+        number: body.number
+    })
 
-    console.log(person)
-    res.json(person)
+    person
+        .save()
+        .then(data => {
+            res.json(data)
+        })
 })
 
 const PORT = process.env.PORT || 3001
