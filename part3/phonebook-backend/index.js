@@ -12,7 +12,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 const errorMiddleware = (error, req, res, next) => {
     console.log(error.message)
 
-    res.status(404).end()
+    res.json({ error: error.message })
 }
 
 app.get('/api/persons', (req, res) => {
@@ -49,7 +49,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
     // name is missing
     if(!body.name){
@@ -74,6 +74,7 @@ app.post('/api/persons', (req, res) => {
         .then(data => {
             res.json(data)
         })
+        .catch(error => {next(error)})
 })
 
 // 3.17

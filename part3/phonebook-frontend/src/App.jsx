@@ -57,6 +57,9 @@ const App = () => {
                             setNotification(null)
                         }, 5000)
                     })
+                    .catch(error => {
+                        console.log(error)
+                    })
             }
         } else {
             const newPerson = { name: newName, number: newNumber }
@@ -64,8 +67,18 @@ const App = () => {
             personService
                 .create(newPerson)
                 .then(newAddedPerson => {
-                    setPersons(persons.concat(newAddedPerson))
+                    if(newAddedPerson.error !== undefined) { 
+                        setNotification(newAddedPerson.error) 
+                        setNotificationType('error')
+                        setTimeout(() => {
+                            setNotification(null)
+                        }, 5000)
+                    } 
+                    else {
+                        setPersons(persons.concat(newAddedPerson))
+                    }
                 })
+                .catch(error => {console.log("error on frontend")})
 
             setNewName('')
             setNewNumber('')
@@ -98,7 +111,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notification message={notification} className={`.${notificationType}`}/>
+            <Notification message={notification} className={notificationType}/>
             <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
             <h3>Add a new</h3>
