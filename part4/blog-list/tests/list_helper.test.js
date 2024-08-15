@@ -25,7 +25,7 @@ describe('total likes', () => {
 
 describe('favoriteBlog', () => {
     test('of empty list is null', () => {
-        assert.deepStrictEqual(listHelper.favoriteBlog([]),null) 
+        assert.deepStrictEqual(listHelper.favoriteBlog([]), null)
     })
 
     test('when list has only one blog, equals the only blog', () => {
@@ -34,5 +34,28 @@ describe('favoriteBlog', () => {
 
     test('of a bigger list gives the right one', () => {
         assert.deepStrictEqual(listHelper.favoriteBlog(demoBlogs.multiple), demoBlogs.multiple[2])
+    })
+})
+
+describe('mostBlogs', () => {
+    test('of empty list is empty list', () => {
+        assert.deepStrictEqual(listHelper.mostBlogs([]), [])
+    })
+
+    test('of one blog is that blog', () => {
+        assert.deepStrictEqual(listHelper.mostBlogs(demoBlogs.one),
+            {
+                "author": "Edsger W. Dijkstra",
+                "blogs": 1
+            }
+        )
+    })
+
+    test('of a bigger list gives the right one', () => {
+        assert.deepStrictEqual(listHelper.mostBlogs(demoBlogs.multiple),
+            {
+                author: "Robert C. Martin",
+                blogs: 3
+            })
     })
 })
