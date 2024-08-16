@@ -20,8 +20,6 @@ beforeEach(async () => {
   }
 })
 
-// supertest takes care of listening to the app
-
 test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
@@ -43,7 +41,7 @@ test('unique identifier id id not _id', async () => {
   assert(!blog.hasOwnProperty('_id'))
 }) 
 
-test.only('sending post adds a new blog', async () => {
+test('sending post adds a new blog', async () => {
   const initialBlogs = helper.initialBlogs
   const newBlog = new Blog({
     title: "Animal Farm",
@@ -56,10 +54,20 @@ test.only('sending post adds a new blog', async () => {
   
   const finalBlogs = await helper.blogsInDb()
   const titles  = finalBlogs.map(b => b.title)
-  console.log(titles)
 
   assert(titles.includes("Animal Farm"))
   assert.strictEqual(finalBlogs.length - 1, initialBlogs.length)
+})
+
+test('blog added without likes will be 0', async () => {
+  const newBlog = new Blog({
+    title: "Animal Farm",
+    author: "george orwell",
+    url: "www.animalfarmblog.com",
+  })
+
+  const result = await newBlog.save()
+  assert.strictEqual(result.likes, 0)
 })
 
 
