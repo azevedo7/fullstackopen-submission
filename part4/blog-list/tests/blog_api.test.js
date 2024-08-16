@@ -96,6 +96,32 @@ describe('deletion of a blog', () =>{
   })
 })
 
+describe('update of a blog', () => {
+  test('updates a blog', async () => {
+    const newBlog = {
+      title: "Animal Farm",
+      author: "george orwell",
+      url: "www.animalfarmblog.com",
+      likes: 0
+    }  
+
+    await api
+      .put(`/api/blogs/${helper.initialBlogs[0].id}`)
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+      const blogsAfter = await helpers.blogsInDb()
+
+      assert.strictEqual(blogsAfter[0].title, newBlog.title)
+      assert.strictEqual(blogsAfter[0].author, newBlog.author)
+      assert.strictEqual(blogsAfter[0].url, newBlog.url)
+      assert.strictEqual(blogsAfter[0].likes, newBlog.likes)
+  })  
+
+  assert()
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
