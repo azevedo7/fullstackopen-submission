@@ -1,15 +1,26 @@
 // import test
-const { test, after } = require('node:test')
+const { test, after, beforeEach} = require('node:test')
 const assert = require('node:assert')
-
+const helper = require('./test_helper')
 const app = require('../app')
 const supertest = require('supertest')
 const mongoose = require('mongoose')
 
 const Blog = require('../models/blog')
+const api = supertest(app)
+
+beforeEach(async () => {
+  // remove all in the database
+  await Blog.deleteMany({})
+
+  // add every blog in initialBlogs
+  for(let blog of helper.initialBlogs) {
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
+})
 
 // supertest takes care of listening to the app
-const api = supertest(app)
 
 test('blogs are returned as json', async () => {
   await api
@@ -21,7 +32,7 @@ test('blogs are returned as json', async () => {
 test('returns the right number of blogs', async () => {
   const response = await api.get('/api/blogs')
 
-  assert.strictEqual(response.body.length, 2)
+  assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
 test('unique identifier id id not _id', async () => {
@@ -31,6 +42,25 @@ test('unique identifier id id not _id', async () => {
   assert(blog.hasOwnProperty('id'))
   assert(!blog.hasOwnProperty('_id'))
 }) 
+
+test.only('sending post adds a new blog', async () => {
+  const initialBlogs = helper.initialBlogs
+  const newBlog = new Blog({
+    title: "Animal Farm",
+    author: "george orwell",
+    url: "www.animalfarmblog.com",
+    likes: 0
+  })
+
+  await newBlog.save()
+  
+  const finalBlogs = await helper.blogsInDb()
+  const titles  = finalBlogs.map(b => b.title)
+  console.log(titles)
+
+  assert(titles.includes("Animal Farm"))
+  assert.strictEqual(finalBlogs.length - 1, initialBlogs.length)
+})
 
 
 after(async () => {

@@ -10,13 +10,11 @@ router.get('/', async (req, res) => {
     res.json(blogs)
 })
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const blog = new Blog(req.body)
-    blog
-        .save()
-        .then(result => {
-            res.status(201).json(result)
-        })
+
+    const result = await blog.save()
+    res.status(201).json(result)
 })
 
 
