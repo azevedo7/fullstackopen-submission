@@ -1,3 +1,4 @@
+require('express-async-errors')
 const express = require('express')
 const Blog = require('../models/blog')
 
@@ -16,6 +17,7 @@ router.post('/', async (req, res) => {
     const result = await blog.save()
     res.status(201).json(result)
 })
+
 
 
 module.exports = router

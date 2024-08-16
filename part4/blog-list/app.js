@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const blogs = require('./controllers/blogs')
 const config = require('./utils/config')
+const middlewares = require('./utils/middlewares')
 
 const url = config.MONGODB_URI
 console.log('connecting to', url)
@@ -14,5 +15,8 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/blogs', blogs)
+
+
+app.use(middlewares.errorHandler)
 
 module.exports = app

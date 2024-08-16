@@ -1,5 +1,5 @@
 // import test
-const { test, after, beforeEach} = require('node:test')
+const { test, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const helper = require('./test_helper')
 const app = require('../app')
@@ -14,7 +14,7 @@ beforeEach(async () => {
   await Blog.deleteMany({})
 
   // add every blog in initialBlogs
-  for(let blog of helper.initialBlogs) {
+  for (let blog of helper.initialBlogs) {
     let blogObject = new Blog(blog)
     await blogObject.save()
   }
@@ -39,7 +39,7 @@ test('unique identifier id id not _id', async () => {
 
   assert(blog.hasOwnProperty('id'))
   assert(!blog.hasOwnProperty('_id'))
-}) 
+})
 
 test('sending post adds a new blog', async () => {
   const initialBlogs = helper.initialBlogs
@@ -51,9 +51,9 @@ test('sending post adds a new blog', async () => {
   })
 
   await newBlog.save()
-  
+
   const finalBlogs = await helper.blogsInDb()
-  const titles  = finalBlogs.map(b => b.title)
+  const titles = finalBlogs.map(b => b.title)
 
   assert(titles.includes("Animal Farm"))
   assert.strictEqual(finalBlogs.length - 1, initialBlogs.length)
@@ -68,6 +68,18 @@ test('blog added without likes will be 0', async () => {
 
   const result = await newBlog.save()
   assert.strictEqual(result.likes, 0)
+})
+
+test('dont accept blog without title or url', async () => {
+  const newBlog = new Blog({
+    author: "george orwell",
+    url: "www.animalfarmblog.com",
+  })
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
 })
 
 
