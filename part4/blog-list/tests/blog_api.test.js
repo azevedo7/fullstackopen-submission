@@ -1,5 +1,5 @@
 // import test
-const { test, after, beforeEach } = require('node:test')
+const { test, after, describe, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const helper = require('./test_helper')
 const app = require('../app')
@@ -82,6 +82,19 @@ test('dont accept blog without title or url', async () => {
     .expect(400)
 })
 
+describe('deletion of a blog', () =>{
+  test('successfuly deletes a blog', async () => {
+    await api
+      .delete(`/api/blogs/${helper.initialBlogs[0].id}`)
+      .expect(204)
+
+    const blogsAfter = await helpers.blogsInDb()
+    const titles = blogsAfter.map
+
+    assert(!titles.contains(helper.initialBlogs[0].title))
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length - 1)
+  })
+})
 
 after(async () => {
   await mongoose.connection.close()
