@@ -11,6 +11,15 @@ const api = supertest(app)
 
 beforeEach(async () => {
     await User.deleteMany({})
+
+    const passwordHash = await helper.hashedPassword("password")
+    const newUser = new User({
+        username: "inicial",
+        name: "user inicial",
+        passwordHash
+    })
+
+    await newUser.save()
 })
 
 test('User adds correct with encryption', async () => {
@@ -18,8 +27,8 @@ test('User adds correct with encryption', async () => {
 
     const newUser = {
         username: "azevedo",
-        password: "password",
-        name: "joao azeveo"
+        name: "joao azeveo",
+        password: "password"
     }
 
     await api
@@ -39,12 +48,12 @@ test('User gives error when username already exists', async () => {
     const usersBefore = await helper.usersInDb()
     
     const newUser = {
-        username: "azevedo",
+        username: "inicial",
         password: "password",
         name: "joao azeveo"
     }
 
-    api
+    await api
         .post('/api/users')
         .send(newUser)
         .expect(409)
@@ -64,7 +73,7 @@ test('User gives error when username is too short', async () => {
         name: "joao azeveo"
     }
 
-    api
+    await api
         .post('/api/users')
         .send(newUser)
         .expect(402)
@@ -73,6 +82,19 @@ test('User gives error when username is too short', async () => {
     const usersAfter = await helper.usersInDb()
 
     assert.strictEqual(usersBefore.length, usersAfter.length)
+})
+
+test('Login with correct credentials', async () => {
+    const user = {
+        username: "inicial",
+        password: "password",
+    }
+
+    await api
+        .post('/api/login')
+        .send(user)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
 })
 
 after(async () => {

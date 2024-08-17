@@ -51,4 +51,10 @@ const hashedPassword = async password => {
   return await bcrypt.hash(password, saltRounds)
 }
 
-module.exports = { initialBlogs, blogsInDb, usersToAdd, usersInDb }
+module.exports = { 
+  initialBlogs,
+  blogsInDb,
+  usersToAdd,
+  usersInDb,
+  hashedPassword
+}
