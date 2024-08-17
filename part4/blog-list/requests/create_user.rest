@@ -9,11 +9,12 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3001/api/notes
+POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY2YmZkMjAyMDc0ZjA1M2M2MjM3OWYzMSIsImlhdCI6MTcyMzg4NDY4Nn0.QvGRUMDWAnQfnZVYnHZRJq7rivryRMFfhNSgRTZrpg4
 
 {
-  "content": "rest client is a handy tool",
-  "important": false
+  "title": "isto nao functiona",
+  "author": "eu car",
+  "url": "sklojfwel;fjea;f",
+  "likes": 10,
 }

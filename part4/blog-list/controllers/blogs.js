@@ -1,20 +1,29 @@
 require('express-async-errors')
 const express = require('express')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // make router
 const router = express.Router()
 
 // use as normal app.get
 router.get('/', async (req, res) => {
-    const blogs = await Blog.find({})
+    const blogs = await Blog
+        .find({})
+        .populate('user')
     res.json(blogs)
 })
 
 router.post('/', async (req, res) => {
     const blog = new Blog(req.body)
 
+    const user = await User.findOne({})
+
     const result = await blog.save()
+
+    user.blogs = user.blogs.concat(result._id)
+    await user.save()
+
     res.status(201).json(result)
 })
 
