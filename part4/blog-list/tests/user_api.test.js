@@ -35,7 +35,46 @@ test('User adds correct with encryption', async () => {
     assert(!(user.passwordHash===newUser.password))
 })
 
+test('User gives error when username already exists', async () => {
+    const usersBefore = await helper.usersInDb()
+    
+    const newUser = {
+        username: "azevedo",
+        password: "password",
+        name: "joao azeveo"
+    }
+
+    api
+        .post('/api/users')
+        .send(newUser)
+        .expect(409)
+        .expect('Content-Type', /application\/json/)
+
+    const usersAfter = await helper.usersInDb()
+
+    assert.strictEqual(usersBefore.length, usersAfter.length)
+})
+
+test('User gives error when username is too short', async () => {
+    const usersBefore = await helper.usersInDb()
+
+    const newUser = {
+        username: "az",
+        password: "password",
+        name: "joao azeveo"
+    }
+
+    api
+        .post('/api/users')
+        .send(newUser)
+        .expect(402)
+        .expect('Content-Type', /application\/json/)
+
+    const usersAfter = await helper.usersInDb()
+
+    assert.strictEqual(usersBefore.length, usersAfter.length)
+})
 
 after(async () => {
-    mongoose.connection.close()
+    await mongoose.connection.close()
 })
