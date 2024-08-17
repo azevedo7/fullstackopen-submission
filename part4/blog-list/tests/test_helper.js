@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const initialBlogs = [
   {
@@ -26,12 +27,12 @@ const usersToAdd = [
   {
     username: "johndoe",
     name: "John Doe",
-    passwordHash: "secret"
+    password: "secret"
   },
   {
     username: "janedoe",
     name: "Jane Doe",
-    passwordHash: "anothersecret"
+    password: "anothersecret"
   }
 ]
 
@@ -43,6 +44,11 @@ const blogsInDb = async () => {
 const usersInDb = async () => {
   const users = await User.find({})
   return users.map(user => user.toJSON())
+}
+
+const hashedPassword = async password => {
+  const saltRounds = 10
+  return await bcrypt.hash(password, saltRounds)
 }
 
 module.exports = { initialBlogs, blogsInDb, usersToAdd, usersInDb }
