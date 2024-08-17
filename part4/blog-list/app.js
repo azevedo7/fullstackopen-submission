@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const blogs = require('./controllers/blogs')
 const users = require('./controllers/user')
+const login = require('./controllers/login')
 const config = require('./utils/config')
 const middlewares = require('./utils/middlewares')
 
@@ -17,6 +18,7 @@ app.use(cors())
 
 app.use('/api/blogs', blogs)
 app.use('/api/users', users)
+app.use('/api/login', login)
 
 
 app.use(middlewares.errorHandler)
