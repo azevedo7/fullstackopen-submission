@@ -97,6 +97,22 @@ test('Login with correct credentials', async () => {
         .expect('Content-Type', /application\/json/)
 })
 
+test('adding blog without token gives error', async () => {
+    const blog = {
+        title: "test",
+        author: "test",
+        url: "test",
+        likes: 1
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(blog)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+        
+})
+
 after(async () => {
     await mongoose.connection.close()
 })

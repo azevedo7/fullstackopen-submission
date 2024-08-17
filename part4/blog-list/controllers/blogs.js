@@ -1,7 +1,17 @@
 require('express-async-errors')
+require('dotenv').config()
 const express = require('express')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+    if(authorization && authorization.startsWith('Bearer ')){
+        return authorization.replace('Bearer ', '')
+    } 
+    return null
+}
 
 // make router
 const router = express.Router()
@@ -15,17 +25,30 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const blog = new Blog(req.body)
+    const body = req.body
+    // check for authorization
+    const token = getTokenFrom(req)
+    if(!token) {
+        return res.status(401).json({error: 'token invalid'})
+    }
+    const decodedToken = jwt.verify(token, process.env.SECRET)
 
-    const user = await User.findOne({})
+    console.log(decodedToken)
+    const user = await User.findOne({ _id: decodedToken.id })
 
-    blog.user = user
-    const result = await blog.save()
+    const blog = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        user: user._id
+    })
 
-    user.blogs = user.blogs.concat(result._id)
+
+    const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    res.status(201).json(result)
+    res.json(savedBlog)
 })
 
 router.delete('/:id', async (req, res) => {
