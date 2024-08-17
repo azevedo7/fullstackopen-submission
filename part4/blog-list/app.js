@@ -3,6 +3,7 @@ const cors = require('cors')
 const express = require('express')
 const app = express()
 const blogs = require('./controllers/blogs')
+const users = require('./controllers/user')
 const config = require('./utils/config')
 const middlewares = require('./utils/middlewares')
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/blogs', blogs)
+app.use('/api/users', users)
 
 
 app.use(middlewares.errorHandler)
