@@ -19,6 +19,7 @@ router.post('/', async (req, res) => {
 
     const user = await User.findOne({})
 
+    blog.user = user
     const result = await blog.save()
 
     user.blogs = user.blogs.concat(result._id)

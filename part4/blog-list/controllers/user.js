@@ -9,11 +9,11 @@ userRouter.post('/', async (req, res) => {
     // validation
     // unique username -- username and password 3 chars
     if(await User.findOne({ username: username })){
-        res.status(409).json({error: 'name already exists'})
+        return res.status(409).json({error: 'name already exists'})
     }
 
     if(username.length < 3 || password.length < 3){
-        res.status(402).json({error: 'username or password too short'})
+        return res.status(402).json({error: 'username or password too short'})
     }
 
     // hash the password

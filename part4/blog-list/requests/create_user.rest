@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "username": "admin",
-  "user": "admin",
+  "name": "admin",
   "password": "admin"
 }
 
@@ -13,8 +13,8 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-  "title": "isto nao functiona",
-  "author": "eu car",
-  "url": "sklojfwel;fjea;f",
+  "title": "finalmetne",
+  "author": "eunsdf",
+  "url": "example.com",
   "likes": 10,
 }
