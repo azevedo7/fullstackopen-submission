@@ -11,6 +11,7 @@ Content-Type: application/json
 
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2NmMwZDkyOGVkODc3YWQwMGMwM2U0NDIiLCJpYXQiOjE3MjM5NjkxOTV9.WjsjbLQ4ZNwjCXgXzOvhDy6a3FkwLCv44dgcMpxmUI4
 
 {
   "title": "finalmetne",

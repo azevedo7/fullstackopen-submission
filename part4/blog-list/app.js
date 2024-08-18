@@ -1,3 +1,4 @@
+require('express-async-errors')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const express = require('express')
@@ -15,6 +16,8 @@ mongoose.set('strictQuery', false)
 
 app.use(express.json())
 app.use(cors())
+
+app.use(middlewares.tokenExtractor)
 
 app.use('/api/blogs', blogs)
 app.use('/api/users', users)
