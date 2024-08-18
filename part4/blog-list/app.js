@@ -19,7 +19,7 @@ app.use(cors())
 
 app.use(middlewares.tokenExtractor)
 
-app.use('/api/blogs', blogs)
+app.use('/api/blogs',middlewares.userExtractor, blogs)
 app.use('/api/users', users)
 app.use('/api/login', login)
 
