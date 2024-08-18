@@ -113,6 +113,12 @@ test('adding blog without token gives error', async () => {
         
 })
 
+test('deleting blog', async () => {
+    api
+        .delete('/api/blogs/')
+        .expect(204)
+})
+
 after(async () => {
     await mongoose.connection.close()
 })

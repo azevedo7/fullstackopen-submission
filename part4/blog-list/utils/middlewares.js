@@ -5,7 +5,11 @@ const errorHandler = (error, req, res, next) => {
         res.status(400).send({ error: 'expected `username` to be unique'})
     } else if (error.name == 'JsonWebTokenError') {
         res.status(401).send({ error: 'invalid token' })
+    } else if(error.name == 'TypeError') {
+        res.status(400).send({error: 'invalid note or user'})
     }
+    console.log(error)
+    next(error)
 }
 
 const tokenExtractor = (req, res, next) => {
@@ -14,7 +18,7 @@ const tokenExtractor = (req, res, next) => {
     if(authorization && authorization.startsWith('Bearer ')){
         req.token = authorization.replace('Bearer ', '') 
     } else {
-        req.token = ''
+        req.token = null
     }
     
     next()

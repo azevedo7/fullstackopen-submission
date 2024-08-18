@@ -1,4 +1,3 @@
-require('express-async-errors')
 require('dotenv').config()
 const express = require('express')
 const Blog = require('../models/blog')
@@ -17,16 +16,10 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-
     const body = req.body
-    // check for authorization
-    // if(!token) {
-    //     return res.status(401).json({error: 'token invalid'})
-    // }
 
     const decodedToken = jwt.verify(req.token, process.env.SECRET)
 
-    console.log(decodedToken)
     const user = await User.findOne({ _id: decodedToken.id })
 
     if(!user) {
@@ -40,7 +33,6 @@ router.post('/', async (req, res) => {
         user: user._id
     })
 
-
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
@@ -48,9 +40,15 @@ router.post('/', async (req, res) => {
     res.json(savedBlog)
 })
 
-router.delete('/:id', async (req, res) => {
-    Blog.findOneAndDelete(req.params.id)
-    res.status(204)
+router.delete('/:id', async (req, res, next) => {
+        const blog = await Blog.findById(req.params.id)
+        const user = jwt.verify(req.token, process.env.SECRET)
+
+        if(blog.user.toString() == user.id.toString()){
+            await Blog.findByIdAndDelete(blog.id)
+        }
+
+        res.status(204).end()
 })
 
 router.put('/:id', async (req, res) => {
@@ -66,5 +64,6 @@ router.put('/:id', async (req, res) => {
     const response = await Blog.findByIdAndUpdate(req.params.id, blog, { new: true })
     res.json(response)
 })
+
 
 module.exports = router
