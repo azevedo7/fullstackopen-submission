@@ -39,9 +39,7 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res, next) => {
         const blog = await Blog.findById(req.params.id)
-        //const user = jwt.verify(req.token, process.env.SECRET)
         const user = req.user
-        console.log(user)
 
         if(blog.user.toString() == user._id.toString()){
             await Blog.findByIdAndDelete(blog.id)
