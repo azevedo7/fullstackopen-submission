@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import notifications from './components/Notifications'
+import './styles/App.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -9,6 +11,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [token, setToken] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [notificationType, setNotificationType] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -18,7 +22,7 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if(loggedUserJSON){
+    if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       //blogService.setToken(user.token)
@@ -26,7 +30,7 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    if(user){
+    if (user) {
       blogService.setToken(user.token)
     } else {
       blogService.setToken(null)
@@ -46,11 +50,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      console.log(exception)
-      console.log("wrong details")
+      createNotification("wrong username or password", 'error')
     }
   }
-  
+
   const handleLogout = () => {
     window.localStorage.clear()
     setUser(null)
@@ -58,7 +61,6 @@ const App = () => {
 
   const loginForm = () => (
     <form>
-      <h2>Log in to application</h2>
       <div>
         username
         <input
@@ -81,34 +83,46 @@ const App = () => {
     </form>
   )
 
-  const createBlog = (e) =>{
+  const createBlog = async (e) => {
     e.preventDefault()
     const form = e.target
     const formData = new FormData(form)
     const formDataObj = Object.fromEntries(formData.entries())
 
-    blogService.createBlog(formDataObj)
+    const newBlog = await blogService.createBlog(formDataObj)
+    if (newBlog) {
+      setBlogs([...blogs, newBlog])
+    }
+    createNotification(`a new blog ${formDataObj.title} by ${formDataObj.author} added`, 'confirm')
+  }
+
+  const createNotification = (notification, notificationType) => {
+    setNotification(notification)
+    setNotificationType(notificationType)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
   }
 
   const blogForm = () => (
     <form onSubmit={createBlog}>
       <div>
         title
-        <input 
+        <input
           type='text'
           name='title'
         />
       </div>
       <div>
         author
-        <input 
+        <input
           type='text'
           name='author'
         />
       </div>
       <div>
         url
-        <input 
+        <input
           type='url'
           name='url'
         />
@@ -119,21 +133,28 @@ const App = () => {
 
   if (user === null) {
     return (
-      loginForm()
+      <div>
+        <h2>Log in to application</h2>
+        {notification && notifications[notificationType](notification)}
+        {loginForm()}
+      </div>
     )
   }
 
   return (
     <div>
       <h2>blogs</h2>
+
+      {notification && notifications[notificationType](notification)}
+
       <div>
         {user.username} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
 
-      <br/>
+      <br />
       {blogForm()}
-      <br/>
+      <br />
       <div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
