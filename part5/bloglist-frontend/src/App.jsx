@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import notifications from './components/Notifications'
+import BlogForm from './components/BlogForm'
+import Toggleable from './components/Toggleable'
 import './styles/App.css'
 
 const App = () => {
@@ -10,9 +12,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [token, setToken] = useState('')
   const [notification, setNotification] = useState(null)
   const [notificationType, setNotificationType] = useState('')
+  
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -83,17 +86,14 @@ const App = () => {
     </form>
   )
 
-  const createBlog = async (e) => {
-    e.preventDefault()
-    const form = e.target
-    const formData = new FormData(form)
-    const formDataObj = Object.fromEntries(formData.entries())
-
-    const newBlog = await blogService.createBlog(formDataObj)
-    if (newBlog) {
+  const addBlog = async (blogObject) =>{
+    const newBlog = await blogService.createBlog(blogObject)
+    if(newBlog){
+      blogFormRef.current.toggleShow()
       setBlogs([...blogs, newBlog])
     }
-    createNotification(`a new blog ${formDataObj.title} by ${formDataObj.author} added`, 'confirm')
+
+    createNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, 'confirm')
   }
 
   const createNotification = (notification, notificationType) => {
@@ -104,33 +104,6 @@ const App = () => {
     }, 5000)
   }
 
-  const blogForm = () => (
-    <form onSubmit={createBlog}>
-      <div>
-        title
-        <input
-          type='text'
-          name='title'
-        />
-      </div>
-      <div>
-        author
-        <input
-          type='text'
-          name='author'
-        />
-      </div>
-      <div>
-        url
-        <input
-          type='url'
-          name='url'
-        />
-      </div>
-      <button type='submit'>create</button>
-    </form>
-  )
-
   if (user === null) {
     return (
       <div>
@@ -140,6 +113,12 @@ const App = () => {
       </div>
     )
   }
+
+  const blogForm = () => (
+    <Toggleable text={'Create Blog'} ref={blogFormRef}>
+      <BlogForm addBlog={addBlog} />
+    </Toggleable>
+  )
 
   return (
     <div>
