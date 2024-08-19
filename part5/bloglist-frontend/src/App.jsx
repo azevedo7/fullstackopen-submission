@@ -19,9 +19,19 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if(loggedUserJSON){
-      setUser(JSON.parse(loggedUserJSON))
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      //blogService.setToken(user.token)
     }
   }, [])
+
+  useEffect(() => {
+    if(user){
+      blogService.setToken(user.token)
+    } else {
+      blogService.setToken(null)
+    }
+  }, [user])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -32,6 +42,7 @@ const App = () => {
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       setUser(user)
+      //setToken(user.token)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -70,6 +81,42 @@ const App = () => {
     </form>
   )
 
+  const createBlog = (e) =>{
+    e.preventDefault()
+    const form = e.target
+    const formData = new FormData(form)
+    const formDataObj = Object.fromEntries(formData.entries())
+
+    blogService.createBlog(formDataObj)
+  }
+
+  const blogForm = () => (
+    <form onSubmit={createBlog}>
+      <div>
+        title
+        <input 
+          type='text'
+          name='title'
+        />
+      </div>
+      <div>
+        author
+        <input 
+          type='text'
+          name='author'
+        />
+      </div>
+      <div>
+        url
+        <input 
+          type='url'
+          name='url'
+        />
+      </div>
+      <button type='submit'>create</button>
+    </form>
+  )
+
   if (user === null) {
     return (
       loginForm()
@@ -84,6 +131,9 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
 
+      <br/>
+      {blogForm()}
+      <br/>
       <div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
