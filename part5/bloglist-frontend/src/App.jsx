@@ -118,7 +118,7 @@ const App = () => {
   }
 
   const blogForm = () => (
-    <Toggleable text={'Create Blog'} ref={blogFormRef}>
+    <Toggleable buttonLabel={'Create Blog'} ref={blogFormRef}>
       <BlogForm addBlog={addBlog} />
     </Toggleable>
   )

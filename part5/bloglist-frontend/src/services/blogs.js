@@ -13,7 +13,7 @@ const getAll = async () => {
 }
 
 const createBlog = async blog => {
-  const request = { 
+  const request = {
     headers: { Authorization: token }
   }
 

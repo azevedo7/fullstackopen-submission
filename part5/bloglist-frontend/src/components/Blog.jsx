@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
 const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
   const [view, setView] = useState(false)
@@ -30,7 +29,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
       <div><a href={blog.url}>{blog.url}</a></div>
       <div>likes: {blog.likes} <button onClick={() => { likeBlog(blog) }}>like</button></div>
       <div>{blog.user.name}</div>
-      {user.username == blog.user.username ?
+      {user.username === blog.user.username ?
         <button onClick={() => deleteBlog(blog)}>delete</button>
         : ''
       }
