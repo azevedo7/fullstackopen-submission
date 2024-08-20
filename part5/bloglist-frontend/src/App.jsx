@@ -20,10 +20,10 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
-      )
+    )
   }, [])
 
-  const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes)
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -133,30 +133,37 @@ const App = () => {
     }
     const response = await blogService.likeBlog(blog.id, updatedBlog)
 
-    setBlogs(blogs.map(b => b.id === blog.id ? {...b, likes: b.likes + 1 } : b))
-}
+    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b))
+  }
 
-return (
-  <div>
-    <h2>blogs</h2>
+  const deleteBlog = async blog => {
+    if(window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)){
+      await blogService.deleteBlog(blog.id)
+      setBlogs(blogs.filter(b => b.id!==blog.id))
+    }
+  }
 
-    {notification && notifications[notificationType](notification)}
-
+  return (
     <div>
-      {user.username} logged in
-      <button onClick={handleLogout}>logout</button>
-    </div>
+      <h2>blogs</h2>
 
-    <br />
-    {blogForm()}
-    <br />
-    <div>
-      {sortedBlogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
-      )}
+      {notification && notifications[notificationType](notification)}
+
+      <div>
+        {user.username} logged in
+        <button onClick={handleLogout}>logout</button>
+      </div>
+
+      <br />
+      {blogForm()}
+      <br />
+      <div>
+        {sortedBlogs.map(blog =>
+          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} user={user} deleteBlog={deleteBlog}/>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
 export default App

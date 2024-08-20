@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, likeBlog }) => {
-  const [view, setView] = useState(false) 
+const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
+  const [view, setView] = useState(false)
 
   const blogStyle = {
     border: '1px solid black',
@@ -10,10 +10,10 @@ const Blog = ({ blog, likeBlog }) => {
     margin: '5px 0px',
   }
 
-  const toggleView = () => {setView(!view)}
+  const toggleView = () => { setView(!view) }
 
-  if(!view){
-    return(
+  if (!view) {
+    return (
       <div style={blogStyle}>
         {blog.title}, {blog.author}
         <button onClick={toggleView}>view</button>
@@ -24,12 +24,16 @@ const Blog = ({ blog, likeBlog }) => {
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title}
+        {blog.title}, {blog.author}
         <button onClick={toggleView}>hide</button>
       </div>
       <div><a href={blog.url}>{blog.url}</a></div>
-      <div>likes: {blog.likes} <button onClick={() => {likeBlog(blog)}}>like</button></div>
-      <div>{blog.author}</div>
+      <div>likes: {blog.likes} <button onClick={() => { likeBlog(blog) }}>like</button></div>
+      <div>{blog.user.name}</div>
+      {user.username == blog.user.username ?
+        <button onClick={() => deleteBlog(blog)}>delete</button>
+        : ''
+      }
     </div>
   )
 }
