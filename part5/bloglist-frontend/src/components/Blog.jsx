@@ -1,13 +1,13 @@
 import { useState } from 'react'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [view, setView] = useState(false) 
 
   const blogStyle = {
     border: '1px solid black',
     padding: 5,
     margin: '5px 0px',
-
   }
 
   const toggleView = () => {setView(!view)}
@@ -28,7 +28,7 @@ const Blog = ({ blog }) => {
         <button onClick={toggleView}>hide</button>
       </div>
       <div><a href={blog.url}>{blog.url}</a></div>
-      <div>likes: {blog.likes}</div>
+      <div>likes: {blog.likes} <button onClick={() => {likeBlog(blog)}}>like</button></div>
       <div>{blog.author}</div>
     </div>
   )

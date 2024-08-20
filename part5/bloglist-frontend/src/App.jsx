@@ -14,7 +14,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
   const [notificationType, setNotificationType] = useState('')
-  
+
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -86,9 +86,9 @@ const App = () => {
     </form>
   )
 
-  const addBlog = async (blogObject) =>{
+  const addBlog = async (blogObject) => {
     const newBlog = await blogService.createBlog(blogObject)
-    if(newBlog){
+    if (newBlog) {
       blogFormRef.current.toggleShow()
       setBlogs([...blogs, newBlog])
     }
@@ -120,27 +120,40 @@ const App = () => {
     </Toggleable>
   )
 
-  return (
+  const likeBlog = async (blog) => {
+    const updatedBlog = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: blog.user.id,
+    }
+    const response = await blogService.likeBlog(blog.id, updatedBlog)
+
+    setBlogs(blogs.map(b => b.id === blog.id ? {...b, likes: b.likes + 1 } : b))
+}
+
+return (
+  <div>
+    <h2>blogs</h2>
+
+    {notification && notifications[notificationType](notification)}
+
     <div>
-      <h2>blogs</h2>
-
-      {notification && notifications[notificationType](notification)}
-
-      <div>
-        {user.username} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
-
-      <br />
-      {blogForm()}
-      <br />
-      <div>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
+      {user.username} logged in
+      <button onClick={handleLogout}>logout</button>
     </div>
-  )
+
+    <br />
+    {blogForm()}
+    <br />
+    <div>
+      {blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
+      )}
+    </div>
+  </div>
+)
 }
 
 export default App

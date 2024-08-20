@@ -52,6 +52,7 @@ router.put('/:id', async (req, res) => {
     const body = req.body
 
     const blog = {
+        user: body.user,
         title: body.title,
         author: body.author,
         url: body.url,
