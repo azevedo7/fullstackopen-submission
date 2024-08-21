@@ -12,10 +12,6 @@ const NoteForm = ({ createNote }) => {
         setNewNote('')
     }
 
-    const handleChange = (event) => {
-        setNewNote(event.target.value)
-    }
-
     return(
         <div className='formDiv'>
             <h2>Create a new note</h2>
