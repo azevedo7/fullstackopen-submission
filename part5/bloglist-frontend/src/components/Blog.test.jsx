@@ -50,3 +50,33 @@ test('clicking the button shows url and likes', async () => {
     expect(element).toHaveTextContent(`${blog.likes}`)
     expect(element).toHaveTextContent(`${blog.user.name}`)
 })
+
+test('like button works multiple times', async () => {
+    const user = userEvent.setup()
+
+    const blog = {
+        title: 'Component testing is done with react-testing-library',
+        author: 'Robert C. Martin',
+        url: 'https://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+        likes: 0,
+        user: {
+            name: "teste",
+            username: "testuser"
+        }
+    }
+
+    const eventHandler = vi.fn()
+
+    const { container } = render(<Blog blog={blog} likeBlog={eventHandler} />)
+    
+    // activate view
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
+
+    //like post twice
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(eventHandler.mock.calls).toHaveLength(2)
+})
