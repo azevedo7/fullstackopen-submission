@@ -5,7 +5,13 @@ const BlogForm = ({ addBlog }) => {
     const formData = new FormData(form)
     const formDataObj = Object.fromEntries(formData.entries())
 
-    await addBlog(formDataObj)
+    console.log('Submitting form with data:', formDataObj) // Add this line
+    try {
+      await addBlog(formDataObj)
+      console.log('addBlog called successfully')
+    } catch {
+      console.error('Error calling addBlog:', error)
+    }
   }
 
 
@@ -16,6 +22,7 @@ const BlogForm = ({ addBlog }) => {
         <input
           type='text'
           name='title'
+          placeholder="title"
         />
       </div>
       <div>
@@ -23,6 +30,7 @@ const BlogForm = ({ addBlog }) => {
         <input
           type='text'
           name='author'
+          placeholder="author"
         />
       </div>
       <div>
@@ -30,6 +38,7 @@ const BlogForm = ({ addBlog }) => {
         <input
           type='url'
           name='url'
+          placeholder="url"
         />
       </div>
       <button type='submit'>create</button>
@@ -37,4 +46,4 @@ const BlogForm = ({ addBlog }) => {
   )
 }
 
-export default BlogForm
+  export default BlogForm
