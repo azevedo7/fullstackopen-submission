@@ -39,7 +39,7 @@ describe('Blog app', () => {
                 await page.getByLabel('password').fill('wrong')
                 await page.getByRole('button', { name: 'login'}).click()
 
-                await expect(page.getByText('wrong username or password'))
+                await expect(page.getByText('wrong username or password')).toBeVisible()
             })
 
     })
