@@ -1,8 +1,17 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-
+const { addBlog, loginWith } = require('./helper')
 
 describe('Blog app', () => {
-    beforeEach(async ({ page }) => {
+    beforeEach(async ({ page, request }) => {
+        await request.post('/api/testing/reset')
+        await request.post('/api/users/', {
+            data: {
+                username: 'admin',
+                name: 'user',
+                password: 'password'
+            }
+        })
+
         await page.goto('/')
     })
 
@@ -13,34 +22,36 @@ describe('Blog app', () => {
     })
 
     describe('Login', () => {
-        beforeEach(async({ page, request }) => {
-            // Reset database
-            await request.post('/api/testing/reset')
-            // Create user
-            await request.post('/api/users/', {
-                data: {
-                    username: 'admin',
-                    name: 'user',
-                    password: 'password'
-                }
-            })
+        test('succeeds with correct credentials', async ({ page }) => {
+            loginWith(page, 'admin', 'password')
+            await expect(page.getByText('admin logged in')).toBeVisible()
         })
 
-            test('succeeds with correct credentials', async({ page }) => {
-                await page.getByLabel('username').fill('admin')
-                await page.getByLabel('password').fill('password')
-                await page.getByRole('button', { name: 'login' }).click()
-                
-                await expect(page.getByText('admin logged in')).toBeVisible()
-            })
+        test('fails with wrong credentials', async ({ page }) => {
+            loginWith(page, 'admin', 'wrong')
+            await expect(page.getByText('wrong username or password')).toBeVisible()
+        })
+    })
 
-            test('fails with wrong credentials', async({ page }) => {
-                await page.getByLabel('username').fill('admin')
-                await page.getByLabel('password').fill('wrong')
-                await page.getByRole('button', { name: 'login'}).click()
+    describe('When logged in', () => {
+        beforeEach(async ({ page }) => {
+            loginWith(page, 'admin', 'password')
+        })
 
-                await expect(page.getByText('wrong username or password')).toBeVisible()
-            })
+        test('a new blog can be created', async ({ page }) => {
+            await addBlog(page, 'test note', 'test author', 'http://example.com')
 
+            await expect(page.getByText('a new blog test note by test author added')).toBeVisible()
+            await expect(page.getByText('test note, test author')).toBeVisible()
+        })
+
+        test('a blog can be liked', async({ page }) => {
+            await addBlog(page, 'blog with zero likes', 'nobody', 'http://likes.com')
+            
+            await page.getByRole('button', { name: 'view' }).click()
+            await page.getByRole('button', { name: 'like' }).click()
+
+            await expect(page.getByText('likes: 1')).toBeVisible()
+        })
     })
 })
