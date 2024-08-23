@@ -1,5 +1,6 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { addBlog, loginWith } = require('./helper')
+const { addBlog, loginWith, likeBlog } = require('./helper')
+const { assert } = require('console')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
@@ -60,6 +61,24 @@ describe('Blog app', () => {
             await page.getByRole('button', { name: 'delete' }).click()
             page.on('dialog', dialog => dialog.accept());
         })
+
+        test('blogs are ordered according to likes', async({ page }) => {
+            await addBlog(page, 'first blog', 'nobody', 'http://likes.com')
+            await addBlog(page, 'second blog', 'nobody', 'http://likes.com')
+            await addBlog(page, 'third blog', 'nobody', 'http://likes.com')
+            await addBlog(page, 'fourth blog', 'nobody', 'http://likes.com')
+            await addBlog(page, 'fifth blog', 'nobody', 'http://likes.com')
+
+            await page.getByText('fifth blog, nobody').waitFor()
+            
+            // blog4 - 3 likes, blog2- 1 like ...
+            await likeBlog(page, 'fourth blog, nobody', 3)
+            await likeBlog(page, 'second blog, nobody', 1)
+
+            expect(await page.getByTestId('blog')).toHaveCount(5)
+            expect(await page.getByTestId('blog').nth(0).getByText('fourth blog, nobody')).toBeVisible()
+            expect(await page.getByTestId('blog').nth(1).getByText('second blog, nobody')).toBeVisible()
+        })
     })
 
     describe('when multiple users', () => {
@@ -82,7 +101,7 @@ describe('Blog app', () => {
             await page.goto('/')
         })
 
-        test.only('only the user who added the blog can delete it', async ({ page }) => {
+        test('only the user who added the blog can delete it', async ({ page }) => {
             // user1 will add a blog and user2 will open the blog and try to remove it
             await loginWith(page, 'user1', 'password')    
             await addBlog(page, 'test note', 'test author', 'http://example.com')

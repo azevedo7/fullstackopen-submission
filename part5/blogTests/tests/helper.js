@@ -12,4 +12,15 @@ const loginWith = async (page, username, password) => {
     await page.getByRole('button', { name: 'login' }).click()
 }
 
-export { addBlog, loginWith }
+const likeBlog = async(page, text, times = 1) => {
+    const blogDiv = await page.getByText(text)
+    await blogDiv.getByRole('button', { name: 'view' }).click()
+    const blogExtended = await page.locator('.blogExtended')
+    for(let i = 0; i < times; i++) {
+        await blogExtended.getByRole('button', { name: 'like' }).click()
+        await blogExtended.getByText('likes: ', i+1).waitFor()
+    }
+    await blogExtended.getByRole('button', { name: 'hide' }).click()
+}
+
+export { addBlog, loginWith, likeBlog }

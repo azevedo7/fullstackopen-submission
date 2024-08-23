@@ -20,7 +20,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 
   if (!view) {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} data-testid='blog'>
         {blog.title}, {blog.author}
         <button onClick={toggleView} className='viewButton'>view</button>
       </div>
