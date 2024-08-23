@@ -68,22 +68,26 @@ const App = () => {
   const loginForm = () => (
     <form>
       <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => { setUsername(target.value) }}
-        />
+        <label>
+          username
+          <input
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => { setUsername(target.value) }}
+          />
+        </label>
       </div>
       <div>
-        password
-        <input
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => { setPassword(target.value) }}
-        />
+        <label>
+          password
+          <input
+            type='password'
+            value={password}
+            name='Password'
+            onChange={({ target }) => { setPassword(target.value) }}
+          />
+        </label>
       </div>
       <button onClick={handleLogin}>login</button>
     </form>
@@ -137,9 +141,9 @@ const App = () => {
   }
 
   const deleteBlog = async blog => {
-    if(window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)){
+    if (window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)) {
       await blogService.deleteBlog(blog.id)
-      setBlogs(blogs.filter(b => b.id!==blog.id))
+      setBlogs(blogs.filter(b => b.id !== blog.id))
     }
   }
 
@@ -159,7 +163,7 @@ const App = () => {
       <br />
       <div>
         {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} user={user} deleteBlog={deleteBlog}/>
+          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} user={user} deleteBlog={deleteBlog} />
         )}
       </div>
     </div>
