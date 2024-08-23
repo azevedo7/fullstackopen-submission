@@ -1,7 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
   const [view, setView] = useState(false)
+  const [canDelete, setCanDelete] = useState(false)
+
+  useEffect(() => {
+    if (user && blog.user) {
+      setCanDelete(user.username === blog.user.username)
+    }
+  }, [user, blog])
 
   const blogStyle = {
     border: '1px solid black',
@@ -29,10 +36,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
       <div><a href={blog.url}>{blog.url}</a></div>
       <div>likes: {blog.likes} <button onClick={() => { likeBlog(blog) }}>like</button></div>
       <div>{blog.user.name}</div>
-      {user && user.username === blog.user.username ?
-        <button onClick={() => deleteBlog(blog)}>delete</button>
-        : ''
-      }
+      {canDelete && <button onClick={() => deleteBlog(blog)}>delete</button>}
     </div>
   )
 }

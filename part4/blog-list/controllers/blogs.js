@@ -30,7 +30,8 @@ router.post('/', async (req, res) => {
         user: user._id
     })
 
-    const savedBlog = await blog.save()
+    let savedBlog = await blog.save()
+    savedBlog = await savedBlog.populate('user', {username: 1, name: 1, id: 1})
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
@@ -41,6 +42,7 @@ router.delete('/:id', async (req, res, next) => {
         const blog = await Blog.findById(req.params.id)
         const user = req.user
 
+        console.log(user)
         if(blog.user.toString() == user._id.toString()){
             await Blog.findByIdAndDelete(blog.id)
         }

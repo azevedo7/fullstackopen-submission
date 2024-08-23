@@ -47,11 +47,18 @@ describe('Blog app', () => {
 
         test('a blog can be liked', async({ page }) => {
             await addBlog(page, 'blog with zero likes', 'nobody', 'http://likes.com')
-            
             await page.getByRole('button', { name: 'view' }).click()
             await page.getByRole('button', { name: 'like' }).click()
 
             await expect(page.getByText('likes: 1')).toBeVisible()
+        })
+
+        test('a blog can be removed', async({ page }) => {
+            await addBlog(page, 'bye blog', 'nobody', 'http://delete.com')
+            await page.getByRole('button', { name: 'view' }).click()
+
+            await page.getByRole('button', { name: 'delete' }).click()
+            page.on('dialog', dialog => dialog.accept());
         })
     })
 })

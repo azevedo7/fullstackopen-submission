@@ -94,7 +94,7 @@ const App = () => {
   )
 
   const addBlog = async (blogObject) => {
-    const newBlog = await blogService.createBlog(blogObject)
+    let newBlog = await blogService.createBlog(blogObject)
     if (newBlog) {
       blogFormRef.current.toggleShow()
       setBlogs([...blogs, newBlog])
