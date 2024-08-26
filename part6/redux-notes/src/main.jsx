@@ -13,8 +13,6 @@ const store = configureStore({
   }
 })
 
-console.log(store.getState())
-
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <App />
