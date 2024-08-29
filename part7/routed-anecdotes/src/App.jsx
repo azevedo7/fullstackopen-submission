@@ -126,6 +126,7 @@ const CreateNew = ({ addNew, setNotification }) => {
           <input
             name="content"
             {...content}
+            reset=''
           />
         </div>
         <div>
@@ -133,13 +134,14 @@ const CreateNew = ({ addNew, setNotification }) => {
           <input
             name="author"
             {...author}
+            reset=''
           />
         </div>
         <div>
           url for more info
           <input
             name="info"
-            {...info}
+            {... {...info, reset: undefined} }
           />
         </div>
         <button type="submit">create</button>
