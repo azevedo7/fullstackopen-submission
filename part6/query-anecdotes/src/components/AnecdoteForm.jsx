@@ -1,7 +1,9 @@
 import { useQueryClient , useMutation } from '@tanstack/react-query'
 import { addNew } from '../services/anecdotes'
+import { useNotificationDispatch, newNotification } from '../NotificationContext'
 
 const AnecdoteForm = () => {
+  const dispatch = useNotificationDispatch()
   const queryClient = useQueryClient()
   const newNoteMutation = useMutation({
     mutationFn: addNew,
@@ -9,6 +11,10 @@ const AnecdoteForm = () => {
       //queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
       const currentData = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueriesData(['anecdotes'], currentData.concat(data))
+      newNotification(dispatch, `Added '${data.content}'`, 5)
+    },
+    onError: (error) => {
+      newNotification(dispatch, `Note has to be at least 5 characters`, 5)
     }
   })
 

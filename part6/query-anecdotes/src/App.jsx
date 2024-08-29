@@ -1,47 +1,60 @@
-import AnecdoteForm from './components/AnecdoteForm'
-import Notification from './components/Notification'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getAll, updateAnecdote } from './services/anecdotes.js'
+import AnecdoteForm from "./components/AnecdoteForm"
+import Notification from "./components/Notification"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { getAll, updateAnecdote } from "./services/anecdotes.js"
+import {
+  createNotification,
+  clearNotification,
+  useNotificationDispatch,
+} from "./NotificationContext"
 
 const App = () => {
+  const dispatch = useNotificationDispatch()
   const queryClient = useQueryClient()
 
   const result = useQuery({
-    queryKey: ['anecdotes'],
+    queryKey: ["anecdotes"],
     queryFn: getAll,
-    retry: 1
+    retry: 1,
   })
 
   const handleVote = (anecdote) => {
-    const newAnecdote = {...anecdote, votes: anecdote.votes + 1}
+    const newAnecdote = { ...anecdote, votes: anecdote.votes + 1 }
     updateAnecdote(newAnecdote)
-    const currentData = queryClient.getQueryData(['anecdotes'])
-    queryClient.setQueryData(['anecdotes'], currentData.map(a => a.id === anecdote.id ? newAnecdote : a))
+    const currentData = queryClient.getQueryData(["anecdotes"])
+    queryClient.setQueryData(
+      ["anecdotes"],
+      currentData.map((a) => (a.id === anecdote.id ? newAnecdote : a))
+    )
+    dispatch(createNotification(`you voted for ${anecdote.content}`))
+    setTimeout(() => { dispatch(clearNotification()) }, 5000)
   }
 
-  if(result.isLoading) { return 'loading data...'}
-  if(result.isError) { return 'anecdote service not available due to problems in server'}
+  if (result.isLoading) {
+    return "loading data..."
+  }
+  if (result.isError) {
+    return "anecdote service not available due to problems in server"
+  }
 
   const anecdotes = result.data
 
   return (
     <div>
       <h3>Anecdote app</h3>
-    
+
       <Notification />
       <AnecdoteForm />
-    
-      {anecdotes.map(anecdote =>
+
+      {anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
+          <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
             <button onClick={() => handleVote(anecdote)}>vote</button>
           </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }
