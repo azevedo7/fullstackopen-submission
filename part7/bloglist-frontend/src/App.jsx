@@ -9,7 +9,7 @@ import './styles/App.css'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { errorNotification, confirmNotification } from './slices/notificationActions'
-import { initializeBlogs, createBlog } from './slices/blogActions'
+import { initializeBlogs, createBlog, likeBlog, deleteBlog } from './slices/blogActions'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -119,24 +119,16 @@ const App = () => {
     </Toggleable>
   )
 
-  const likeBlog = async (blog) => {
-    const updatedBlog = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-      user: blog.user.id,
-    }
-    const response = await blogService.likeBlog(blog.id, updatedBlog)
+  const handleLike = async (blog) => {
+    const newBlog = {...blog, likes: blog.likes + 1} 
+    await dispatch(likeBlog(newBlog))
 
     dispatch(confirmNotification(`blog ${blog.title} by ${blog.author} liked`))
-    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b))
   }
 
-  const deleteBlog = async blog => {
+  const handleDelete = async blog => {
     if (window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)) {
-      await blogService.deleteBlog(blog.id)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+      dispatch(deleteBlog(blog.id))
     }
   }
 
@@ -156,7 +148,7 @@ const App = () => {
       <br />
       <div>
         {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} user={user} deleteBlog={deleteBlog} />
+          <Blog key={blog.id} blog={blog} likeBlog={handleLike} user={user} deleteBlog={handleDelete} />
         )}
       </div>
     </div>

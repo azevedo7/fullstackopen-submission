@@ -7,12 +7,21 @@ const blogSlice = createSlice({
         setBlogs: (state, action) => {
             return action.payload
         },
-        addBlog: (state, action) => {
+        add: (state, action) => {
             state.push(action.payload)
+        },
+        like: (state, action) => {
+            // action.payload will be the updatedBlog 
+            const id = action.payload.id
+            return state.map(blog => blog.id == id ? action.payload : blog)
+        },
+        deleteReducer: (state, action) => {
+            const id = action.payload
+            return state.filter(b => b.id != id)
         }
     }
 })
 
-export const { setBlogs, addBlog } = blogSlice.actions
+export const { setBlogs, add, like, deleteReducer } = blogSlice.actions
 
 export default blogSlice.reducer
