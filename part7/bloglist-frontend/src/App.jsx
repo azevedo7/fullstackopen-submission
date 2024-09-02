@@ -1,39 +1,40 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
-import Notification from './components/Notification'
-import BlogForm from './components/BlogForm'
-import Toggleable from './components/Toggleable'
-import './styles/App.css'
+import { useState, useEffect, useRef } from "react"
+import Blog from "./components/Blog"
+import blogService from "./services/blogs"
+import loginService from "./services/login"
+import Notification from "./components/Notification"
+import BlogForm from "./components/BlogForm"
+import Toggleable from "./components/Toggleable"
+import "./styles/App.css"
 
-import { useSelector, useDispatch } from 'react-redux'
-import { errorNotification, confirmNotification } from './slices/notificationActions'
-import { initializeBlogs, createBlog, likeBlog, deleteBlog } from './slices/blogActions'
+import { useSelector, useDispatch } from "react-redux"
+import {
+  errorNotification,
+  confirmNotification,
+} from "./slices/notificationActions"
+import {
+  initializeBlogs,
+  createBlog,
+  likeBlog,
+  deleteBlog,
+} from "./slices/blogActions"
+import { initializeUser, login, logoutUser } from "./slices/userActions"
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   const dispatch = useDispatch()
   const blogFormRef = useRef()
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(initializeUser())
   }, [])
 
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
 
   useEffect(() => {
     if (user) {
@@ -43,27 +44,16 @@ const App = () => {
     }
   }, [user])
 
-
   const handleLogin = async (e) => {
     e.preventDefault()
 
-    try {
-      const body = { username, password }
-      const user = await loginService.login(body)
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      setUser(user)
-      //setToken(user.token)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-      dispatch(errorNotification('wrong username or password'))
-    }
+    dispatch(login(username, password))
+    setUsername("")
+    setPassword("")
   }
 
   const handleLogout = () => {
-    window.localStorage.clear()
-    setUser(null)
+    dispatch(logoutUser())
   }
 
   const loginForm = () => (
@@ -75,7 +65,9 @@ const App = () => {
             type="text"
             value={username}
             name="Username"
-            onChange={({ target }) => { setUsername(target.value) }}
+            onChange={({ target }) => {
+              setUsername(target.value)
+            }}
           />
         </label>
       </div>
@@ -83,10 +75,12 @@ const App = () => {
         <label>
           password
           <input
-            type='password'
+            type="password"
             value={password}
-            name='Password'
-            onChange={({ target }) => { setPassword(target.value) }}
+            name="Password"
+            onChange={({ target }) => {
+              setPassword(target.value)
+            }}
           />
         </label>
       </div>
@@ -95,12 +89,16 @@ const App = () => {
   )
 
   const addBlog = async (blogObject) => {
-    const newBlog = await dispatch(createBlog(blogObject)) 
+    const newBlog = await dispatch(createBlog(blogObject))
     if (newBlog) {
       blogFormRef.current.toggleShow()
     }
 
-    dispatch(confirmNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`))
+    dispatch(
+      confirmNotification(
+        `a new blog ${newBlog.title} by ${newBlog.author} added`
+      )
+    )
   }
 
   if (user === null) {
@@ -114,19 +112,19 @@ const App = () => {
   }
 
   const blogForm = () => (
-    <Toggleable buttonLabel={'Create Blog'} ref={blogFormRef}>
+    <Toggleable buttonLabel={"Create Blog"} ref={blogFormRef}>
       <BlogForm addBlog={addBlog} />
     </Toggleable>
   )
 
   const handleLike = async (blog) => {
-    const newBlog = {...blog, likes: blog.likes + 1} 
+    const newBlog = { ...blog, likes: blog.likes + 1 }
     await dispatch(likeBlog(newBlog))
 
     dispatch(confirmNotification(`blog ${blog.title} by ${blog.author} liked`))
   }
 
-  const handleDelete = async blog => {
+  const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)) {
       dispatch(deleteBlog(blog.id))
     }
@@ -147,9 +145,15 @@ const App = () => {
       {blogForm()}
       <br />
       <div>
-        {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={handleLike} user={user} deleteBlog={handleDelete} />
-        )}
+        {sortedBlogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            likeBlog={handleLike}
+            user={user}
+            deleteBlog={handleDelete}
+          />
+        ))}
       </div>
     </div>
   )
