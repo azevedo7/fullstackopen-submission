@@ -18,10 +18,21 @@ const blogSlice = createSlice({
         deleteReducer: (state, action) => {
             const id = action.payload
             return state.filter(b => b.id != id)
+        },
+        comment: (state, action) => {
+            const { id, comment } = action.payload
+            const newBlog = state.find(b => b.id == id)
+            if(!newBlog.comments) {
+                newBlog.comments = [comment]
+            } else {
+                newBlog.comments.push(comment)
+            }
+
+            return state.map(blog => blog.id == id ? newBlog : blog)
         }
     }
 })
 
-export const { setBlogs, add, like, deleteReducer } = blogSlice.actions
+export const { setBlogs, add, like, deleteReducer, comment } = blogSlice.actions
 
 export default blogSlice.reducer

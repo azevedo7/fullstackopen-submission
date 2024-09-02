@@ -1,40 +1,29 @@
-import { useState, useEffect, useRef } from "react"
-import Blog from "./components/Blog"
+import { useEffect } from "react"
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import blogService from "./services/blogs"
-import loginService from "./services/login"
 import Notification from "./components/Notification"
-import BlogForm from "./components/BlogForm"
-import Toggleable from "./components/Toggleable"
+import LoginForm from "./components/LoginForm"
+import BlogList from "./components/BlogList"
+import BlogPage from "./components/BlogPage"
+import Users from "./components/Users"
+import User from "./components/User"
+import Nav from "./components/Nav"
 import "./styles/App.css"
 
 import { useSelector, useDispatch } from "react-redux"
-import {
-  errorNotification,
-  confirmNotification,
-} from "./slices/notificationActions"
-import {
-  initializeBlogs,
-  createBlog,
-  likeBlog,
-  deleteBlog,
-} from "./slices/blogActions"
-import { initializeUser, login, logoutUser } from "./slices/userActions"
+import { initializeBlogs } from "./slices/blogActions"
+import { initializeUser} from "./slices/userActions"
+import { initializeUsers } from "./slices/usersActions"
 
 const App = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const blogs = useSelector((state) => state.blogs)
-  const user = useSelector((state) => state.user)
-
   const dispatch = useDispatch()
-  const blogFormRef = useRef()
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
     dispatch(initializeUser())
+    dispatch(initializeUsers())
   }, [])
-
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   useEffect(() => {
     if (user) {
@@ -44,118 +33,32 @@ const App = () => {
     }
   }, [user])
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-
-    dispatch(login(username, password))
-    setUsername("")
-    setPassword("")
-  }
-
-  const handleLogout = () => {
-    dispatch(logoutUser())
-  }
-
-  const loginForm = () => (
-    <form>
-      <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => {
-              setUsername(target.value)
-            }}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => {
-              setPassword(target.value)
-            }}
-          />
-        </label>
-      </div>
-      <button onClick={handleLogin}>login</button>
-    </form>
-  )
-
-  const addBlog = async (blogObject) => {
-    const newBlog = await dispatch(createBlog(blogObject))
-    if (newBlog) {
-      blogFormRef.current.toggleShow()
-    }
-
-    dispatch(
-      confirmNotification(
-        `a new blog ${newBlog.title} by ${newBlog.author} added`
-      )
-    )
-  }
-
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
         <Notification />
-        {loginForm()}
+        <LoginForm />
       </div>
     )
   }
 
-  const blogForm = () => (
-    <Toggleable buttonLabel={"Create Blog"} ref={blogFormRef}>
-      <BlogForm addBlog={addBlog} />
-    </Toggleable>
-  )
-
-  const handleLike = async (blog) => {
-    const newBlog = { ...blog, likes: blog.likes + 1 }
-    await dispatch(likeBlog(newBlog))
-
-    dispatch(confirmNotification(`blog ${blog.title} by ${blog.author} liked`))
-  }
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog: ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog.id))
-    }
-  }
-
   return (
-    <div>
-      <h2>blogs</h2>
-
-      <Notification />
-
+    <Router>
       <div>
-        {user.username} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
+        <Nav />
+        <h2>blogs</h2>
+        <Notification />
 
-      <br />
-      {blogForm()}
-      <br />
-      <div>
-        {sortedBlogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={handleLike}
-            user={user}
-            deleteBlog={handleDelete}
-          />
-        ))}
+        <Routes>
+          <Route path="/" element={<BlogList />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<BlogPage />} />
+        </Routes>
+
       </div>
-    </div>
+    </Router>
   )
 }
 
