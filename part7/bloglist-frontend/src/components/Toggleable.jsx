@@ -15,13 +15,13 @@ const Toggleable = forwardRef((props, refs) => {
   })
 
   if(!show){
-    return (<button onClick={toggleShow}>{props.buttonLabel}</button>)
+    return (<button className='btn btn-primary' onClick={toggleShow}>{props.buttonLabel}</button>)
   }
 
   return(
-    <div>
+    <div className="flex-row justify-center rounded-xl shadow-md p-4 m-4 max-w-xl mx-auto">
       {props.children}
-      <button onClick={toggleShow}>cancel</button>
+      <button onClick={toggleShow} className='btn btn-error ml-auto'>cancel</button>
     </div>
   )
 })
