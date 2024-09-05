@@ -6,21 +6,19 @@ const Users = () => {
     console.log(users)
 
     return(
-        <div>
-            <h2>Users</h2>
-
-            <table>
+        <div className="container max-w-xl mx-auto m-4 p-4 rounded-xl bg-secondary-content">
+            <table className="table">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>blogs created</th>
+                        <th>Blogs created</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {users.map(user => (
                         <tr key={user.id}>
-                            <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
+                            <td><Link className="link" to={`/users/${user.id}`}>{user.username}</Link></td>
                             <td>{user.blogs.length}</td>
                         </tr>
                     ))}

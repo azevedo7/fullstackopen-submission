@@ -36,7 +36,6 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
         <Notification />
         <LoginForm />
       </div>
@@ -45,9 +44,8 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <div className="min-h-screen">
         <Nav />
-        <h2 className="text-3xl font-bold underline">blogs</h2>
         <Notification />
 
         <Routes>
@@ -57,9 +55,23 @@ const App = () => {
           <Route path="/blogs/:id" element={<BlogPage />} />
         </Routes>
 
+        <Footer />
       </div>
     </Router>
   )
+}
+
+const Footer = () => {
+  return (
+    <footer className="footer footer-center bg-base-content text-primary-content p-3 sticky top-[100vh] mt-4">
+      <div className="grid-flow-col">
+      made with ♡ by 
+      <a className="link" href="https://github.com/azevedo7">azevedo7</a>
+
+      </div>
+    </footer>
+  )
+
 }
 
 export default App

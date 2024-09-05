@@ -22,13 +22,13 @@ const blogSlice = createSlice({
         comment: (state, action) => {
             const { id, comment } = action.payload
             const newBlog = state.find(b => b.id == id)
-            if(!newBlog.comments) {
-                newBlog.comments = [comment]
-            } else {
-                newBlog.comments.push(comment)
+            if(newBlog) {
+                if(!newBlog.comments) {
+                    newBlog.comments = [comment]
+                } else {
+                    newBlog.comments.push(comment)
+                }
             }
-
-            return state.map(blog => blog.id == id ? newBlog : blog)
         }
     }
 })
