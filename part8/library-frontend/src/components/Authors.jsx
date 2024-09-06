@@ -34,13 +34,12 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <BirthYearForm />
+      <BirthYearForm authors={authors}/>
     </div>
   )
 }
 
-const BirthYearForm = () => {
-  const [name, setName] = useState('')
+const BirthYearForm = ({ authors }) => {
   const [born, setBorn] = useState('')
 
   const [ editAuthor ]= useMutation(EDIT_AUTHOR, {
@@ -49,15 +48,18 @@ const BirthYearForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    const formData = new FormData(event.target)
+    const name = Object.fromEntries(formData).name
     editAuthor({ variables: {name, setBornTo: parseInt(born) }})  
   }
 
   return(
     <form onSubmit={handleSubmit}>
-      <div>
-        name
-        <input type="text" name="name" onChange={({ target }) => setName(target.value)}/>
-      </div>
+      <select name="name">
+        {authors.map((author) => 
+          (<option key={author.id} value={author.name}>{author.name}</option>)
+        )} 
+      </select>
       <div>
         born
         <input type="number" name="born" onChange={({ target }) => setBorn(target.value)} />
