@@ -1,6 +1,27 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+const { GraphQLError } = require('graphql')
+const mongoose = require('mongoose')
+const Author = require('./models/author')
+const Book = require('./models/book')
+
+require('dotenv').config()
+
+const MONGODB_URI = process.env.MONGODB_URI
+
+console.log('connecting to', MONGODB_URI)
+
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connection to MongoDB:', error.message)
+  })
+
+
+
 
 let authors = [
   {
@@ -27,12 +48,6 @@ let authors = [
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
   },
 ]
-
-/*
- * English:
- * It might make more sense to associate a book with its author by storing the author's id in the context of the book instead of the author's name
- * However, for simplicity, we will store the author's name in connection with the book
-*/
 
 let books = [
   {
@@ -86,15 +101,11 @@ let books = [
   },
 ]
 
-/*
-  you can remove the placeholder query once your first one has been implemented 
-*/
-
 const typeDefs = `
   type Book {
     title: String!,
     published: Int!,
-    author: String!,
+    author: Author!,
     id: ID!,
     genres: [String!]!
   }
@@ -132,7 +143,7 @@ const resolvers = {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: (root, args) => {
-        let updatedBooks = books
+        let updatedBooks = Book.find({})
 
         if(args.author) {
             const byAuthor = (book) => {return book.author == args.author}
@@ -149,16 +160,42 @@ const resolvers = {
     allAuthors: () => authors,
   },
   Mutation: {
-    addBook: (root, args) => {
-        let author = authors.find(a => a.name === args.author);
+    addBook: async(root, args) => {
+        let author = await Author.findOne({ name: args.author });
 
         if(!author) {
-            author = { name: args.author, id: uuid() }
+            author = new Author({ name: args.author })
+            try{
+              await author.save()
+            } catch(error) {
+              throw new GraphQLError("Creating author failed", {
+                extensions: {
+                  code: "INTERNAL_SERVER_ERROR",
+                  http: {
+                    status: 500
+                  },
+                  error
+                }  
+              })
+            }
         }
         
-        authors.push(author)
-        const book = {...args, id: uuid()}
-        books.push(book)
+        const book = new Book({...args, author})
+
+        try{
+            await book.save()
+        } catch(error) {
+            throw new GraphQLError("Creating book failed", {
+                extensions: {
+                  code: "INTERNAL_SERVER_ERROR",
+                  http: {
+                    status: 500
+                  },
+                  error
+                }  
+              })
+        }
+
         return book
     },
     editAuthor: (root, args) => {
