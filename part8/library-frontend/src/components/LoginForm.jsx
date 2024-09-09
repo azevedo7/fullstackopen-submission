@@ -9,7 +9,7 @@ const LoginForm = (props) => {
 
     useEffect(() => {
         if(result.data){
-            const token =`Bearer ${result.data.login.value}` 
+            const token =result.data.login.value
             props.setToken(token)
             localStorage.setItem('library-user-token', token)
         }
