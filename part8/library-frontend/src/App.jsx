@@ -7,7 +7,7 @@ import { useApolloClient } from "@apollo/client";
 
 // Subscriptions
 import { useQuery, useMutation, useSubscription } from "@apollo/client"
-import { BOOK_ADDED } from "./components/queries";
+import { BOOK_ADDED, ALL_BOOKS } from "./components/queries";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -16,7 +16,10 @@ const App = () => {
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
-      window.alert(data.data.bookAdded.title + " added")
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: data.data.bookAdded} 
+      })
     }
   })
 
