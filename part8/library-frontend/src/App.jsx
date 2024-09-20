@@ -5,10 +5,20 @@ import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import { useApolloClient } from "@apollo/client";
 
+// Subscriptions
+import { useQuery, useMutation, useSubscription } from "@apollo/client"
+import { BOOK_ADDED } from "./components/queries";
+
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null)
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      window.alert(data.data.bookAdded.title + " added")
+    }
+  })
 
   const logout = () => {
     setToken(null)
