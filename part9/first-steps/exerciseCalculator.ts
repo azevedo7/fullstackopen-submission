@@ -37,8 +37,8 @@ const calculateExercises = (days: number[], target: number): Result => {
         ratingDescription,
         target,
         average,
-    }
-}
+    };
+};
 
 // $ npm run calculateExercises 2 1 0 2 4.5 0 3 1 0 4
 // argv[3] argv[argv.length-1]
@@ -47,22 +47,22 @@ const calculateExercises = (days: number[], target: number): Result => {
 const parseArguments = (args: string[]): Values => {
     if(args.length < 4) throw new Error("Too few arguments");
     const target = Number(process.argv[2]);
-    let days = [];
+    const days = [];
     for(let i = 3; i < process.argv.length; i++) {
-        days.push(Number(process.argv[i]))
+        days.push(Number(process.argv[i]));
     }
     if(!isNaN(target) && !days.includes(NaN)){
         return {
             days,
             target
-        }
+        };
     } else {
-        throw new Error("Provided arguments were not numbers")
+        throw new Error("Provided arguments were not numbers");
     }
-} 
+} ;
 
 try{
-    const { days, target } = parseArguments(process.argv)
+    const { days, target } = parseArguments(process.argv);
     console.log(calculateExercises(days, target));
 } catch(e: unknown) {
     let errorMessage = "Something went wrong: ";

@@ -4,7 +4,7 @@ interface ParseValues {
 }
 
 const calculateBmi = (height: number, weight: number): string => {
-    const bmi = weight / (height / 100) ** 2
+    const bmi = weight / (height / 100) ** 2;
     switch (true) {
         case bmi < 16.0:
             return 'Underweight (Severe thinness)';
@@ -25,7 +25,7 @@ const calculateBmi = (height: number, weight: number): string => {
         default:
             return 'Invalid BMI';
     }
-}
+};
 
 const parseArgumentsBmi = (argv: string[]): ParseValues => {
     if (argv.length > 4) throw new Error("Too many arguments");
@@ -35,18 +35,18 @@ const parseArgumentsBmi = (argv: string[]): ParseValues => {
         return {
             height: Number(argv[2]),
             weight: Number(argv[3])
-        }
+        };
     } else throw new Error("Only input numbers (heigh weigth)");
-}
+};
 
 const queryArguments = (height: string, weight: string): ParseValues => {
     if (!isNaN(Number(height)) && !isNaN(Number(weight))) {
         return {
             height: Number(height),
             weight: Number(weight)
-        }
+        };
     } else throw new Error("Only input numbers (heigh weigth)");
-}
+};
 
 
 const Bmi = (h: string, w: string): {weight: number, height: number, bmi: string} | { error: string } => {
@@ -57,11 +57,11 @@ const Bmi = (h: string, w: string): {weight: number, height: number, bmi: string
             weight,
             height,
             bmi: bmiresult
-        }
-    } catch(e: unknown) {
-        return {error: 'malformated parameters'}
+        };
+    } catch {
+        return {error: 'malformated parameters'};
     }
-}
+};
 
 if (require.main === module) {
     const { height, weight } = parseArgumentsBmi(process.argv);
