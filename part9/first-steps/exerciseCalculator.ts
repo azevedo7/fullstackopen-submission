@@ -13,7 +13,7 @@ interface Values {
     target: number
 }
 
-const calculateExercises = (days: number[], target: number): Result => {
+export const calculateExercises = (days: number[], target: number): Result => {
     const total = days.reduce((acc, curr) => acc + curr);
     const periodLength = days.length;
     const trainingDays = days.filter(val => val !== 0).length;
@@ -41,8 +41,6 @@ const calculateExercises = (days: number[], target: number): Result => {
 };
 
 // $ npm run calculateExercises 2 1 0 2 4.5 0 3 1 0 4
-// argv[3] argv[argv.length-1]
-// argv.length > 4
 
 const parseArguments = (args: string[]): Values => {
     if(args.length < 4) throw new Error("Too few arguments");
@@ -61,7 +59,7 @@ const parseArguments = (args: string[]): Values => {
     }
 } ;
 
-try{
+if(require.main === module) try{
     const { days, target } = parseArguments(process.argv);
     console.log(calculateExercises(days, target));
 } catch(e: unknown) {
