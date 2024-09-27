@@ -1,3 +1,8 @@
+interface ParseValues {
+    height: number,
+    weight: number,
+}
+
 const calculateBmi = (height: number, weight: number): string => {
     const bmi = weight / (height/100)**2
     switch (true) {
@@ -22,4 +27,16 @@ const calculateBmi = (height: number, weight: number): string => {
     }
 }
 
-console.log(calculateBmi(180, 74))
+const parseArgumentsBmi = (argv: string[]): ParseValues => {
+    if(argv.length > 4) throw new Error("Too many arguments");
+    if(argv.length < 4) throw new Error("Too few arguments");
+
+    if(!isNaN(Number(argv[2])) && !isNaN(Number(argv[3]))){
+        return {
+            height: Number(argv[2]),
+            weight: Number(argv[3])
+        }
+    } else throw new Error("Only input numbers (heigh weigth)");
+}
+const { height, weight } = parseArgumentsBmi(process.argv)
+console.log(calculateBmi(height, weight))
