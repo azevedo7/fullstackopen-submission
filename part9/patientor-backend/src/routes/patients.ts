@@ -29,7 +29,6 @@ const errorMiddleware = (error: unknown, _req: Request, res: Response, next: Nex
   }
 };
 
-
 router.post('/',newPatientParser, (req: Request<unknown, unknown, NewPatientEntry>, res: Response<Patient>) => {
         const addedPatient = patientsService.addPatient(req.body); 
         res.json(addedPatient);
