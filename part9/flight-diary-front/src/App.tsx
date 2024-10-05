@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NonSensitiveDiaryEntry } from './types'
+import { NonSensitiveDiaryEntry, Visibility, Weather } from './types'
 import { getAllDiaries, createDiary } from './services/diaryService'
 
 function App() {
@@ -27,9 +27,23 @@ function App() {
       <h2>Add new entry</h2>
       <div style={{ color: 'red' }}>{notification}</div>
       <form onSubmit={addDiary}>
-        <div>date <input value={date} onChange={(e) => setDate(e.target.value)} /></div>
-        <div>visibility <input value={visibility} onChange={(e) => setVisibility(e.target.value)} /></div>
-        <div>weather <input value={weather} onChange={(e) => setWeather(e.target.value)} /></div>
+        <div>date <input type='date' value={date} onChange={(e) => setDate(e.target.value)} /></div>
+        <div>visibility
+          {Object.keys(Visibility).map(key => 
+            <label key={key}>
+              <input type='radio' name='visibility' value={key.toLowerCase()} onChange={(e) => setVisibility(e.target.value as Visibility)} />
+              {key}
+            </label>
+          )}
+        </div>
+        <div>weather
+          {Object.keys(Weather).map(key => 
+            <label key={key}>
+              <input type='radio' name='weather' value={key.toLowerCase()} onChange={(e) => setWeather(e.target.value as Weather)} />
+              {key}
+            </label>
+          )}
+        </div>
         <div> comment <input value={comment} onChange={(e) => setComment(e.target.value)} /></div>
         <button type='submit'>add</button>
       </form>
