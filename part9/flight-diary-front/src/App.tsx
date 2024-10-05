@@ -8,6 +8,7 @@ function App() {
   const [weather, setWeather] = useState('')
   const [visibility, setVisibility] = useState('')
   const [comment, setComment] = useState('')
+  const [notification, setNotification] = useState('')
 
   useEffect(() => {
     getAllDiaries().then(data => setDiary(data));
@@ -16,12 +17,15 @@ function App() {
 
   const addDiary = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    createDiary({ date, visibility, weather, comment }).then(data => setDiary([...diary, data]))
+    createDiary({ date, visibility, weather, comment })
+      .then(data => setDiary([...diary, data]))
+      .catch(error => setNotification(error.response.data))
   }
 
   return(
     <div>
       <h2>Add new entry</h2>
+      <div style={{ color: 'red' }}>{notification}</div>
       <form onSubmit={addDiary}>
         <div>date <input value={date} onChange={(e) => setDate(e.target.value)} /></div>
         <div>visibility <input value={visibility} onChange={(e) => setVisibility(e.target.value)} /></div>
@@ -32,7 +36,7 @@ function App() {
 
       <h2>Diary entries</h2>
       {diary.map(entry => 
-        <div>
+        <div key={entry.id}>
           <h3>{entry.date}</h3>
           visibility: {entry.visibility}
           <br/>
