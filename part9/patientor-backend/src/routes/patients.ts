@@ -1,14 +1,22 @@
 import express, { NextFunction } from 'express';
 import { Response, Request } from 'express';
 import patientsService from '../services/patientsService';
-import { NewPatientEntry, Patient, PatientNonSensitiveInfo } from '../types';
+import { NewPatientEntry, Patient, NonSensitivePatient } from '../types';
 import { newPatientSchema } from '../utils';
 import { ZodError } from 'zod';
 
 const router = express.Router();
 
-router.get('/', (_req, res: Response<PatientNonSensitiveInfo[]>) => {
+router.get('/', (_req, res: Response<NonSensitivePatient[]>) => {
     res.send(patientsService.getNonSensitive());
+});
+
+router.get('/:id', (req: Request, res: Response<Patient>) => {
+    const patient = patientsService.findById(req.params.id);
+    if(patient) {
+        res.send(patient);
+    }
+    res.status(404);
 });
 
 // Parser middleware
