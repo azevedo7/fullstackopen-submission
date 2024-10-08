@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Entry, Patient, PatientFormValues } from "../types";
+import { Patient, PatientFormValues } from "../types";
 
 import { apiBaseUrl } from "../constants";
 
