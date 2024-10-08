@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import diagnosesService from '../../services/diagnoses';
-import { Diagnosis, Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry } from '../../types';
+import { Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry } from '../../types';
 import { assertNever } from './helpers';
 import HeartIcon from '@mui/icons-material/Favorite';
 import HospitalCheckIcon from '@mui/icons-material/MedicalServices';
@@ -8,22 +6,22 @@ import OccupationalIcon from '@mui/icons-material/MonitorHeart';
 
 
 const Entries = ({ entries }: { entries: Entry[] }) =>{
-    const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
+    // const [_diagnoses, setDiagnoses] = useState<Diagnosis[]>();
 
-    useEffect(() => {
-        const fetchDiagnoses = async () => {
-            try{
-                const fetchDiagnoses = await diagnosesService
-                    .getAll();
+    // useEffect(() => {
+    //     const fetchDiagnoses = async () => {
+    //         try{
+    //             const fetchDiagnoses = await diagnosesService
+    //                 .getAll();
 
-                setDiagnoses(fetchDiagnoses);
-            } catch(e){
-                console.log(e);
-            }
-        };
+    //             setDiagnoses(fetchDiagnoses);
+    //         } catch(e){
+    //             console.log(e);
+    //         }
+    //     };
 
-        fetchDiagnoses();
-    }, []);
+    //     fetchDiagnoses();
+    // }, []);
 
     if(!entries || entries.length === 0) {
         return null;
