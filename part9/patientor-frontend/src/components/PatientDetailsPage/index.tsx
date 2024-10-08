@@ -51,6 +51,8 @@ const NewEntryForm = ({patient}: {patient: Patient}) => {
     diagnosisCodes: '',
   });
 
+  const [notification, setNotification] = useState('');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -69,12 +71,19 @@ const NewEntryForm = ({patient}: {patient: Patient}) => {
         diagnosisCodes: formData.diagnosisCodes.split(',').map(code => code.trim()),
     };
     // You can add your API call here
-    const newEntry = await patientService.addNewEntry(patient.id, formDataToSubmit);
-    
+    try{
+        await patientService.addNewEntry(patient.id, formDataToSubmit);
+    } catch (e) {
+        const message = (e.response.data?.error[0].message);
+        if(message){
+            setNotification(message);
+        }
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+    {notification && <div style={{ color: 'red', border: 'solid', padding: 10, borderWidth: 1 }}>{notification}</div>}
       <Typography variant="h4" gutterBottom>
         New Healthcare Entry
       </Typography>
